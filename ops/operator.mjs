@@ -1,0 +1,11 @@
+import {createHash,randomBytes} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {createRequire} from 'node:module';
+import {dirname,join} from 'node:path';
+const require=createRequire(import.meta.url);
+const cli=join(dirname(require.resolve('wrangler/package.json')),'bin','wrangler.js');
+const code=randomBytes(32).toString('hex');
+const hash=createHash('sha256').update(code).digest('hex');
+const sql="DELETE FROM operator_sessions WHERE expires<=unixepoch(); INSERT INTO operator_sessions(ticket_hash,expires) VALUES('"+hash+"',unixepoch()+300)";
+execFileSync(process.execPath,[cli,'d1','execute','kosai-album','--remote','--command',sql],{stdio:['inherit','ignore','inherit']});
+console.log('https://kosaialb.atawi.link/admin/login/\n5分間有効の運営用コード（1回限り）\n'+code);

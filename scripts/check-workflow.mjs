@@ -1,0 +1,64 @@
+// Isolated integration test. All rows, signing keys and uploads live in process memory.
+import {DatabaseSync} from 'node:sqlite';
+import {readFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import worker from '../src/index.js';
+import cleanup from '../ops/retention.js';
+const sqlite=new DatabaseSync(':memory:');sqlite.exec(await readFile('migrations/0001.sql','utf8'));
+sqlite.exec(await readFile('migrations/0002.sql','utf8'));
+function prepare(sql,params=[]){
+ const statement=sqlite.prepare(sql);
+ return {bind:(...v)=>prepare(sql,v),first:()=>statement.get(...params),all:()=>({results:statement.all(...params)}),run:()=>statement.run(...params)}
+}
+const db={prepare,batch:async qs=>{sqlite.exec('BEGIN');try{const a=qs.map(q=>q.run());sqlite.exec('COMMIT');return a}catch(e){sqlite.exec('ROLLBACK');throw e}}};
+const bucket=()=>{const m=new Map();return {put:async(k,v)=>m.set(k,v),get:async k=>m.has(k)?{body:m.get(k)}:null,head:async k=>m.has(k),delete:async keys=>[keys].flat().forEach(k=>m.delete(k))}};
+sqlite.exec(await readFile('migrations/0003.sql','utf8'));
+const origin='https://kosaialb.atawi.link',env={PUBLIC_HOST:'kosaialb.atawi.link',DB:db,ORIGINALS:bucket(),EDITIONS:bucket(),TURNSTILE_SECRET:'local-fixture'};
+globalThis.fetch=async url=>{if(String(url).endsWith('/siteverify'))return Response.json({success:true,hostname:env.PUBLIC_HOST,action:'submit'});throw Error('Unexpected network access')};
+const request=(path,body,headers={})=>worker.fetch(new Request(origin+path,{method:body?'POST':'GET',headers:{origin,...headers},body}),env);
+const expectTracker=async(path,count,headers={})=>{
+ const response=await request(path,null,headers),html=await response.text();
+ assert.equal((html.match(/src="\/album-tracker.js"/g)||[]).length,count,path);
+};
+const form=o=>{const f=new FormData();for(const [k,v] of Object.entries(o))f.set(k,v);return f};
+const ticket='0'.repeat(64);
+const {digest}=await import('../src/intake.js');
+sqlite.prepare('INSERT INTO operator_sessions(ticket_hash,expires) VALUES(?,unixepoch()+300)').run(await digest(ticket));
+const login=await request('/admin/session',form({ticket}));
+assert.equal(login.status,303);
+const auth={cookie:login.headers.get('set-cookie').split(';')[0]};
+assert.equal((await request('/admin/session',form({ticket}))).status,403);
+const bytes=await readFile('public/archive/ndl-arai-1918-480.webp'),image=new Blob([bytes],{type:'image/webp'});
+const common={kind:'photo',rights:'self',email:'test@example.invalid',consent:'1',requestKey:crypto.randomUUID(),file:image,'cf-turnstile-response':'local-fixture'};
+const receipt=await request('/api/submissions',form(common));assert.equal(receipt.status,201);const {id}=await receipt.json();
+assert.equal((await (await request('/api/submissions',form(common))).json()).id,id);
+assert.equal((await request('/api/submissions',form({...common,title:'other'}))).status,409);
+assert.equal((await request('/admin/')).status,403);
+assert.equal((await request('/admin/'+id+'/',null,auth)).status,200);
+await expectTracker('/admin/'+id+'/',0,auth);
+const add=op=>'/api/admin/'+op+'/'+id;
+const p={title:'表示試験',district:'見付',dateLabel:'撮影年不明',era:'年代不明',alt:'試験の駅舎',theme:'鉄道',caption:'動作確認の画像',credit:'架空の提供者',change:'縮小',place:'見付'};
+const res=await request(add('edition'),form({proof:'架空の本人確認',metadata:JSON.stringify(p),'480':image}),auth);
+assert.equal(res.status,200,JSON.stringify(await res.clone().json()));const {version,review}=await res.json(),token=review.split('#')[1];
+assert.equal((await request(add('publish'),form({version}),auth)).status,409);
+const session=await request('/review/exchange',JSON.stringify({token}),{'content-type':'application/json'});assert.equal(session.status,200);
+const cookie={cookie:session.headers.get('set-cookie').split(';')[0]};
+assert.equal((await request('/review/preview',null,cookie)).status,200);assert.equal((await request('/review/image',null,cookie)).status,200);
+await expectTracker('/review/preview',0,cookie);
+assert.equal((await request('/review/decision',form({decision:'agree'}),cookie)).status,200);
+assert.equal((await request('/review/decision',form({decision:'agree'}),cookie)).status,403);
+assert.equal((await request(add('publish'),form({version}),auth)).status,200);
+assert.equal((await request('/photos/c-'+id+'/')).status,200);
+await expectTracker('/photos/c-'+id+'/',0);
+const media='/media/c-'+id+'/'+version+'/480';assert.equal((await request(media)).status,200);
+assert((await (await request('/sitemap.xml')).text()).includes('c-'+id));
+assert.equal((await request(add('withdraw'),form({}),auth)).status,200);
+assert.equal((await request(media)).status,410);assert.equal((await request('/photos/c-'+id+'/')).status,410);
+await expectTracker('/photos/c-'+id+'/',0);
+assert(!(await (await request('/sitemap.xml')).text()).includes('c-'+id));
+assert.equal((await request(add('publish'),form({version,expected:version+':withdrawn'}),auth)).status,409);
+assert.equal((await request(add('reject'),form({}),auth)).status,200);sqlite.prepare('UPDATE submissions SET deadline=1 WHERE id=?').run(id);
+await cleanup.scheduled({},env);assert.equal(sqlite.prepare('SELECT COUNT(*) AS n FROM private_contacts').get().n,0);assert.equal(await env.ORIGINALS.head('original/'+id),false);
+console.log('PASS isolated intake, idempotency, editor authentication, review exchange, explicit consent, publication, withdrawal, retention.');
+const {checkZip}=await import('./check-zip.mjs');
+await checkZip({request,common,form,image,bytes,auth,env,p});

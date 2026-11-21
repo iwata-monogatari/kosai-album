@@ -1,0 +1,45 @@
+{
+  "name": "kosai-album",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "kosaialb.atawi.link",
+      "custom_domain": true
+    }
+  ],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./public",
+    "run_worker_first": true
+  },
+  "vars": {
+    "PUBLIC_HOST": "kosaialb.atawi.link",
+    "OPERATOR_NAME": "湖西懐かし写真館（富士ヶ丘サービス株式会社）",
+    "TURNSTILE_SITE": "0x4AAAAAAGLXbTrJBYLRg0Ms"
+  },
+  "triggers": {
+    "crons": [
+      "53 18 * * *"
+    ]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "kosai-album",
+      "database_id": "e308a030-d7d7-4d31-98a2-b1d5f86691c6"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "ORIGINALS",
+      "bucket_name": "kosai-album-originals"
+    },
+    {
+      "binding": "EDITIONS",
+      "bucket_name": "kosai-album-editions"
+    }
+  ]
+}

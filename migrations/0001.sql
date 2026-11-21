@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS submissions (
+ id TEXT PRIMARY KEY, request_key TEXT NOT NULL UNIQUE, fingerprint TEXT NOT NULL, kind TEXT NOT NULL, state TEXT NOT NULL, original_key TEXT, rights TEXT NOT NULL, created INTEGER NOT NULL, deadline INTEGER
+);
+CREATE TABLE IF NOT EXISTS private_contacts (sid TEXT PRIMARY KEY, email TEXT NOT NULL, content TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS editions (id TEXT PRIMARY KEY, sid TEXT NOT NULL REFERENCES submissions(id), metadata TEXT NOT NULL, proof TEXT NOT NULL, issued INTEGER NOT NULL, token_hash TEXT UNIQUE, expires INTEGER, session_hash TEXT UNIQUE, session_expires INTEGER, decision TEXT, decided INTEGER);
+CREATE TABLE IF NOT EXISTS publications (id TEXT PRIMARY KEY, version TEXT NOT NULL, state TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS audit_events (n INTEGER PRIMARY KEY, sid TEXT NOT NULL, event TEXT NOT NULL, actor TEXT NOT NULL, at INTEGER NOT NULL);
+CREATE INDEX IF NOT EXISTS expiry ON submissions(deadline);
+CREATE TABLE IF NOT EXISTS maintenance (job TEXT PRIMARY KEY,last_ok INTEGER);

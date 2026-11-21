@@ -1,0 +1,14 @@
+{
+  "name": "kosai-album",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/check-workflow.mjs && node scripts/check-catalog.mjs",
+    "deploy": "wrangler deploy",
+    "operator": "node ops/operator.mjs",
+    "dev": "wrangler dev --ip 127.0.0.1 --port 8793"
+  },
+  "devDependencies": {
+    "wrangler": "4.161.0"
+  }
+}
