@@ -56,7 +56,7 @@ function homeSearch(count) {
 const colorUrl='/photos/?series=color';
 const colorTitle='色の残る、昭和・平成の湖西';
 const groups=['古写真帖','駅と鉄道の記憶','平成の風景','空から見る湖西','年代不詳の風景'];
-const groupIntro=['新居の水辺、白須賀の街道。刊行された写真帖に残る風景。','鷲津・新所原・新居町。待ち合わせた駅前と線路沿いをたどります。','町並み、公共施設、浜辺。平成に記録された地域の風景。','戦後から平成へ。七つの地域の市街地や田畑を上空から見比べます。','撮影年が分からない写真。公開資料の来歴と、確かめられた場所を記録します。'];
+const groupIntro=['新居の水辺、白須賀の街道。刊行された写真帖に残る風景。','鷲津・新所原・新居町。待ち合わせた駅前と線路沿いをたどります。','町並み、公共施設、浜辺。平成に記録された地域の風景。','戦後から平成へ。市街地や田畑、海岸・湖岸の移り変わりを上空から見比べます。','撮影年が分からない写真。公開資料の来歴と、確かめられた場所を記録します。'];
 
 function colorFeature(colors) {
   if (!colors.length) return '';
@@ -92,13 +92,19 @@ export function home(all) {
   const colors=all.filter(p=>p.colorPeriod);
   const pickIds=['ndl-arai-1918','ndl-shirasuka-1918','myoryuji-1933'];
   const highlights=pickIds.map(id=>all.find(p=>p.id===id)).filter(Boolean);
-  const additions=all.filter(p=>p.addedOn==='2026-11-21');
-  const newPicks=[additions.find(p=>p.id==='ndl-arai-sekisho-1914')||additions.find(p=>p.collection==='古写真帖'),...additions.filter(p=>p.collection!=='古写真帖').slice(0,2)].filter(Boolean);
+  const batch=all.map(p=>p.addedBatch).filter(Boolean).sort().at(-1);
+  const additions=all.filter(p=>batch?p.addedBatch===batch:p.addedOn==='2026-11-21');
+  const additionsUrl=batch?searchHref('batch',batch):searchHref('added','2026-11-21');
+  const newPicks=[];
+  for(const type of ['古写真帖','駅と鉄道の記憶','平成の風景','空から見る湖西']) {
+    const p=additions.find(p=>p.collection===type); if(p&&newPicks.length<3)newPicks.push(p);
+  }
+  for(const p of additions)if(newPicks.length<3&&!newPicks.includes(p))newPicks.push(p);
   const oldPhotosLink=`<a class="more" href="${esc(searchHref('collection','古写真帖'))}">古写真帖へ</a>`;
   return layout(site,'/',`<div class="wrap collection-home">
     ${cover}
     ${homeSearch(all.length)}
-    ${additions.length?section('新たに収蔵した写真',`<a class="more" href="/photos/?added=2026-11-21">追加した${additions.length}点を見る</a>`,`<div class="exhibit-grid">${newPicks.map(card).join('')}</div>`):''}
+    ${additions.length?section('新たに収蔵した写真',`<a class="more" href="${esc(additionsUrl)}">追加した${additions.length}点を見る</a>`,`<div class="exhibit-grid">${newPicks.map(card).join('')}</div>`):''}
     ${colorFeature(colors)}
     ${karteNotice}
     ${section('資料別のアルバム',allLink,`<div class="collection-grid">${tiles}</div>`)}
@@ -140,6 +146,7 @@ function albumFilters(params,rows,fields,color) {
     <h2 id="photo-filter-heading">写真を絞り込む</h2>
     ${color?'<input type="hidden" name="series" value="color">':''}
     ${params.get('added')?`<input type="hidden" name="added" value="${esc(params.get('added'))}">`:''}
+    ${params.get('batch')?`<input type="hidden" name="batch" value="${esc(params.get('batch'))}">`:''}
     ${keywordField(params.get('q'))}
     <div class="album-filter-options">
       ${fields.map(([key,label])=>options(label,rows,key,params.get(key))).join('')}
@@ -177,9 +184,9 @@ export function listing(all,url) {
   const fields=[['collection','アルバム'],['era','資料の時代'],['theme','テーマ']];
   const params=url.searchParams;
   const color=params.get('series')==='color';
-  const title=color?colorTitle:params.get('added')?'新たに収蔵した写真':'写真を探す';
+  const title=color?colorTitle:(params.get('added')||params.get('batch'))?'新たに収蔵した写真':'写真を探す';
   const rows=color?all.filter(p=>p.colorPeriod):all;
-  const set=rows.filter(p=>(!params.get('added')||p.addedOn===params.get('added'))&&match(p,fields,params,[p.title,p.place,p.caption,p.dateLabel,p.era,p.theme,p.credit,p.collection,p.id].join(' ')));
+  const set=rows.filter(p=>(!params.get('added')||p.addedOn===params.get('added'))&&(!params.get('batch')||p.addedBatch===params.get('batch'))&&match(p,fields,params,[p.title,p.place,p.caption,p.dateLabel,p.era,p.theme,p.credit,p.collection,p.id].join(' ')));
   const size=24, pages=Math.max(1,Math.ceil(set.length/size));
   const page=Math.min(pages,Math.max(1,Math.floor(Number(params.get('page')))||1));
   const start=(page-1)*size;

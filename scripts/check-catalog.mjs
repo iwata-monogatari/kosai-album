@@ -31,6 +31,21 @@ assert.ok(body.includes('舟の集まる新居の水辺'));
 const added=await (await worker.fetch(new Request(canonicalOrigin+'/photos/?added=2026-11-21'),{})).text();
 assert.ok(added.includes('白須賀海岸の波打ち際（撮影年不詳）'),'new additions filter missing prefectural photo');
 assert.ok(!added.includes('/photos/ndl-arai-1918/'),'new additions filter includes an earlier photo');
+const latestBatch=photos.map(p=>p.addedBatch).filter(Boolean).sort().at(-1);
+if(latestBatch){
+ const batchPhotos=photos.filter(p=>p.addedBatch===latestBatch);
+ const batchPath='/photos/?batch='+encodeURIComponent(latestBatch);
+ const batchHtml=await (await worker.fetch(new Request(canonicalOrigin+batchPath),{})).text();
+ assert.ok(batchHtml.includes(`<strong>${batchPhotos.length}点</strong>`),'batch count differs');
+ assert.ok(!batchHtml.includes('/photos/ndl-arai-1918/'),'batch includes original archive');
+ assert.ok(!batchHtml.includes('/photos/shizuoka-mizube-shirasuka/'),'batch includes previous release');
+ assert.ok(batchHtml.includes(`name="batch" value="${latestBatch}"`),'batch lost when submitting a search');
+ const last=batchPhotos.at(-1);
+ const exactQuery=await (await worker.fetch(new Request(canonicalOrigin+batchPath+'&q='+encodeURIComponent(last.id)),{})).text();
+ assert.ok(exactQuery.includes(`<strong>1点</strong>`)&&exactQuery.includes('/photos/'+last.id+'/'),'batch search cannot find the last addition');
+ const endPage=await (await worker.fetch(new Request(canonicalOrigin+batchPath+'&page='+Math.ceil(batchPhotos.length/24)),{})).text();
+ assert.ok(endPage.includes('/photos/'+last.id+'/'),'pagination omits the last addition');
+}
 const unknown=await (await worker.fetch(new Request(canonicalOrigin+'/photos/?era='+encodeURIComponent('年代不詳')),{})).text();
 assert.ok(unknown.includes('撮影年不詳（2013年公開資料）'),'publication year must not become shooting year');
 const sitemap=await (await worker.fetch(new Request(canonicalOrigin+'/sitemap.xml'),{})).text();
