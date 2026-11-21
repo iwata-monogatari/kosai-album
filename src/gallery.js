@@ -55,8 +55,8 @@ function homeSearch(count) {
 }
 const colorUrl='/photos/?series=color';
 const colorTitle='色の残る、昭和・平成の湖西';
-const groups=['古写真帖','駅と鉄道の記憶','平成の風景','空から見る湖西'];
-const groupIntro=['新居の水辺、白須賀の街道。刊行された写真帖に残る風景。','鷲津・新所原・新居町。待ち合わせた駅前と線路沿いをたどります。','町並み、公共施設、浜辺。平成に記録された地域の風景。','戦後から平成へ。七つの地域の市街地や田畑を上空から見比べます。'];
+const groups=['古写真帖','駅と鉄道の記憶','平成の風景','空から見る湖西','年代不詳の風景'];
+const groupIntro=['新居の水辺、白須賀の街道。刊行された写真帖に残る風景。','鷲津・新所原・新居町。待ち合わせた駅前と線路沿いをたどります。','町並み、公共施設、浜辺。平成に記録された地域の風景。','戦後から平成へ。七つの地域の市街地や田畑を上空から見比べます。','撮影年が分からない写真。公開資料の来歴と、確かめられた場所を記録します。'];
 
 function colorFeature(colors) {
   if (!colors.length) return '';
@@ -92,10 +92,13 @@ export function home(all) {
   const colors=all.filter(p=>p.colorPeriod);
   const pickIds=['ndl-arai-1918','ndl-shirasuka-1918','myoryuji-1933'];
   const highlights=pickIds.map(id=>all.find(p=>p.id===id)).filter(Boolean);
+  const additions=all.filter(p=>p.addedOn==='2026-11-21');
+  const newPicks=[...additions.filter(p=>p.collection==='古写真帖').slice(0,1),...additions.filter(p=>p.collection!=='古写真帖').slice(0,2)];
   const oldPhotosLink=`<a class="more" href="${esc(searchHref('collection','古写真帖'))}">古写真帖へ</a>`;
   return layout(site,'/',`<div class="wrap collection-home">
     ${cover}
     ${homeSearch(all.length)}
+    ${additions.length?section('新たに収蔵した写真',`<a class="more" href="/photos/?added=2026-11-21">追加した${additions.length}点を見る</a>`,`<div class="exhibit-grid">${newPicks.map(card).join('')}</div>`):''}
     ${colorFeature(colors)}
     ${karteNotice}
     ${section('資料別のアルバム',allLink,`<div class="collection-grid">${tiles}</div>`)}
@@ -136,6 +139,7 @@ function albumFilters(params,rows,fields,color) {
   return `<form class="filters album-filters" method="get" action="/photos/" role="search" aria-labelledby="photo-filter-heading">
     <h2 id="photo-filter-heading">写真を絞り込む</h2>
     ${color?'<input type="hidden" name="series" value="color">':''}
+    ${params.get('added')?`<input type="hidden" name="added" value="${esc(params.get('added'))}">`:''}
     ${keywordField(params.get('q'))}
     <div class="album-filter-options">
       ${fields.map(([key,label])=>options(label,rows,key,params.get(key))).join('')}
@@ -173,9 +177,9 @@ export function listing(all,url) {
   const fields=[['collection','アルバム'],['era','資料の時代'],['theme','テーマ']];
   const params=url.searchParams;
   const color=params.get('series')==='color';
-  const title=color?colorTitle:'写真を探す';
+  const title=color?colorTitle:params.get('added')?'新たに収蔵した写真':'写真を探す';
   const rows=color?all.filter(p=>p.colorPeriod):all;
-  const set=rows.filter(p=>match(p,fields,params,[p.title,p.place,p.caption,p.dateLabel,p.era,p.theme,p.credit,p.collection,p.id].join(' ')));
+  const set=rows.filter(p=>(!params.get('added')||p.addedOn===params.get('added'))&&match(p,fields,params,[p.title,p.place,p.caption,p.dateLabel,p.era,p.theme,p.credit,p.collection,p.id].join(' ')));
   const size=24, pages=Math.max(1,Math.ceil(set.length/size));
   const page=Math.min(pages,Math.max(1,Math.floor(Number(params.get('page')))||1));
   const start=(page-1)*size;
@@ -222,7 +226,7 @@ export function detail(all,p) {
       <div class="photo-story"><h2>この写真について</h2><p>${esc(p.caption)}</p>${p.memory?'<p>'+esc(p.memory)+'</p>':''}<p><a href="/contact/?photo=${encodeURIComponent(p.id)}">この写真について伝える</a></p></div>
       <section class="photo-source" aria-labelledby="photo-source-heading">
         <h2 id="photo-source-heading">出典・利用条件</h2>
-        <dl id="source"><dt>場所・年代</dt><dd>${esc(p.place)} ／ ${esc(p.dateLabel)} ${esc(p.dateEvidence)}</dd><dt>出典・撮影者・提供者</dt><dd>${esc(p.credit)} ${p.source?'<a href="'+esc(p.source)+'">原資料</a>':''}</dd><dt>利用条件・加工</dt><dd>${p.licenseUrl?'<a href="'+esc(p.licenseUrl)+'">'+esc(p.license)+'</a>':esc(p.license||'提供者の許諾による掲載')}。${esc(p.change)} ${p.evidence?'<a href="'+esc(p.evidence)+'">掲載根拠</a>':''}</dd><dt>写真番号</dt><dd>${esc(p.id)}</dd></dl>
+        <dl id="source"><dt>場所・年代</dt><dd>${esc(p.place)} ／ ${esc(p.dateLabel)} ${esc(p.dateEvidence)}</dd><dt>出典・撮影者・提供者</dt><dd>${esc(p.credit)} ${p.source?'<a href="'+esc(p.source)+'">原資料</a>':''}</dd>${p.sourceTitle?'<dt>原作品名</dt><dd>'+esc(p.sourceTitle)+'</dd>':''}<dt>利用条件・加工</dt><dd>${p.licenseUrl?'<a href="'+esc(p.licenseUrl)+'">'+esc(p.license)+'</a>':esc(p.license||'提供者の許諾による掲載')}。${esc(p.change)} ${p.licenseUrl?.includes('/by-sa/')?'掲載画像にも、上記と同じ表示・継承ライセンスを適用します。':''} ${p.evidence?'<a href="'+esc(p.evidence)+'">掲載根拠</a>':''}</dd><dt>写真番号</dt><dd>${esc(p.id)}</dd></dl>
       </section>
     </div>
     ${consultation('photo')}
@@ -234,7 +238,7 @@ export function feature(all) {
  return layout('駅前のアルバム','/features/kosai-station/',`<div class="wrap page-inner">${pathNav('駅前のアルバム')}<span class="red-tag">通学も、帰省も、この駅から。</span><h1>湖西の駅前アルバム</h1><p class="page-lead">平成元年の新所原駅旧駅舎から、鷲津・新居町の駅前、天竜浜名湖鉄道の小さな駅まで。写真に写る駅の名前と年代から、思い出をたどります。</p>${stations.map(name=>{const rows=all.filter(p=>p.collection==='駅と鉄道の記憶'&&(p.title+p.place).includes(name)).sort((a,b)=>a.year-b.year);return rows.length?section(name+'駅の記録','',`<div class="exhibit-grid">${rows.map(card).join('')}</div>`):''}).join('')}<section class="contribute-note"><h2>あなたのアルバムに、昔の駅前はありませんか。</h2><p>通勤の列車、待ち合わせた店、建て替わる前の駅舎。一枚から、覚えていることと一緒にお寄せください。</p><a class="ink-button" href="/okuru/">写真を寄稿・相談する</a></section>${consultation('station')}</div>`);
 }
 export function library() {
- const sources=[['湖西市「湖西市のあゆみ」','市制施行の祝賀アーチがある昭和47年の鷲津の街角や、二俣線などを掲載した公式の記録です。市の掲載写真は当館へ転載せず、原ページへご案内します。','https://www.city.kosai.shizuoka.jp/shiseijoho/shinoshokai/3187.html'],['国立国会図書館「写真の中の明治・大正」','大正7年刊の写真帖に収められた新居・白須賀。撮影年と刊行年を区別し、原資料と公開区分を各写真ページに記載しています。','https://www.ndl.go.jp/landmarks/'],['国土地理院「地図・空中写真閲覧サービス」','戦後から平成までの湖西・新居周辺の空中写真。撮影年月日と原版番号を確認し、同じ写真を重複収録しないよう地域と時代で整理しています。','https://service.gsi.go.jp/map-photos/'],['Wikimedia Commons','撮影者が公開ライセンスで提供した駅や町並みの写真。一枚ごとに作者・日付・利用条件・原画像へのリンクを掲載しています。','https://commons.wikimedia.org/wiki/Category:Kosai,_Shizuoka']];
+ const sources=[['静岡県オープンデータ「静岡のみずべ100選」','白須賀海岸と浜名川・日ヶ崎地区親水公園。画像ファイルに付されたCC BYの表示と、県の利用規約を確認して掲載しています。撮影年は分からないため、公開年と区別しています。','https://opendata.pref.shizuoka.jp/dataset/fuji-160.html'],['湖西市「湖西市のあゆみ」','市制施行の祝賀アーチがある昭和47年の鷲津の街角や、二俣線などを掲載した公式の記録です。市の掲載写真は当館へ転載せず、原ページへご案内します。','https://www.city.kosai.shizuoka.jp/shiseijoho/shinoshokai/3187.html'],['国立国会図書館「錦絵と写真でめぐる日本の名所」','大正7年刊の写真帖に収められた新居・白須賀。撮影年と刊行年を区別し、原資料と公開区分を各写真ページに記載しています。','https://www.ndl.go.jp/landmarks/'],['国土地理院「地図・空中写真閲覧サービス」','戦後から平成までの湖西・新居周辺の空中写真。撮影年月日と原版番号を確認し、同じ写真を重複収録しないよう地域と時代で整理しています。','https://service.gsi.go.jp/map-photos/'],['Wikimedia Commons','撮影者が公開ライセンスで提供した駅や町並みの写真。一枚ごとに作者・日付・利用条件・原画像へのリンクを掲載しています。','https://commons.wikimedia.org/wiki/Category:Kosai,_Shizuoka']];
  return layout('写真の出典と資料案内','/library/',`<article class="wrap page-inner">${pathNav('資料をたどる')}<h1>記憶を、資料と一緒に残す。</h1><p class="page-lead">写真に写っていること。原資料で確かめられること。まだ分からないこと。それぞれを分けて、一枚の来歴を記録します。</p><div class="book-list">${sources.map(([title,body,url])=>`<section><h2>${title}</h2><p>${body}</p><a href="${url}">原資料を見る</a></section>`).join('')}</div><h2>お手元の写真も、地域の記録に</h2><p>撮影者や年代が分からない場合は、画像を添付せず、分かることからご相談ください。</p><a class="ink-button" href="/okuru/">写真の寄稿について見る</a></article>`);
 }
 export function consultPage() {

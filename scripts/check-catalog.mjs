@@ -28,6 +28,11 @@ for(const path of allPaths){
 }
 const search=await worker.fetch(new Request(canonicalOrigin+'/photos/?q='+encodeURIComponent('新居')),{}),body=await search.text();
 assert.ok(body.includes('舟の集まる新居の水辺'));
+const added=await (await worker.fetch(new Request(canonicalOrigin+'/photos/?added=2026-11-21'),{})).text();
+assert.ok(added.includes('白須賀海岸の波打ち際（撮影年不詳）'),'new additions filter missing prefectural photo');
+assert.ok(!added.includes('/photos/ndl-arai-1918/'),'new additions filter includes an earlier photo');
+const unknown=await (await worker.fetch(new Request(canonicalOrigin+'/photos/?era='+encodeURIComponent('年代不詳')),{})).text();
+assert.ok(unknown.includes('撮影年不詳（2013年公開資料）'),'publication year must not become shooting year');
 const sitemap=await (await worker.fetch(new Request(canonicalOrigin+'/sitemap.xml'),{})).text();
 assert.equal((sitemap.match(/<url>/g)||[]).length,allPaths.length);
 console.log(JSON.stringify({photos:photos.length,imageVariants:photos.reduce((n,p)=>n+p.sizes.length,0),pages:allPaths.length,checkedLinks,search:'pass',sitemap:'pass'}));
