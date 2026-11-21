@@ -80,6 +80,37 @@ function colorFeature(colors) {
   </section>`;
 }
 
+const relatedReading = {
+  "ndl-arai-sekisho-1914": {
+    "slug": "arai-sekisho",
+    "title": "新居関所の歴史と見学案内"
+  },
+  "ndl-arai-1918": {
+    "slug": "arai-shuku",
+    "title": "新居宿の歴史と町歩き"
+  },
+  "ndl-shirasuka-1918": {
+    "slug": "shirasuka-shuku",
+    "title": "白須賀宿の歴史と町歩き"
+  },
+  "ndl-honkoji-1914": {
+    "slug": "honkouji",
+    "title": "本興寺の歴史と拝観案内"
+  },
+  "myoryuji-1933": {
+    "slug": "utsuyama-myoryuji",
+    "title": "宇津山・妙立寺の歴史"
+  },
+  "shinjohara-1989": {
+    "slug": "tenhama",
+    "title": "天浜線で訪ねる湖西のまち"
+  }
+};
+function historyReading(photo) {
+ const article=photo&&relatedReading[photo.id];
+ return `<aside class="library-note history-reading"><h2>写真から、まちの歴史と今へ。</h2><p>${article?'写真に写る場所の背景や、今訪ねるときの情報は、湖西ライフハックの読み物でも紹介しています。':'写真で気になった新居・白須賀の宿場、寺社、浜名湖の風景。湖西ライフハックで歴史や訪問前の情報を読み、今のまちを歩く手がかりにしてみませんか。'}</p><a class="more" href="https://kosai.enshu-lifehack.com/discover/${article?article.slug+'/':''}">${article?esc(article.title):'湖西の観光・歴史・地域情報を読む'}</a></aside>`;
+}
+
 export function home(all) {
   const hero=all.find(p=>p.id==='shinjohara-1989')||all[0];
   const cover=hero?`<section class="front-cover"><figure><a href="${href(hero)}">${img(hero,true,true)}</a><figcaption>${esc(hero.dateLabel)}　／　${esc(hero.place)} <a href="${href(hero)}#source">出典</a></figcaption></figure><div class="cover-note"><span class="red-tag">平成元年の、新所原から</span><h1>${hero.id==='shinjohara-1989'?'あの駅から、<br>湖西の記憶。':esc(hero.title)}</h1><p class="hero-title">${esc(hero.title)}</p><p>${esc(hero.caption)}</p><a class="ink-button" href="${href(hero)}">この一枚をひらく </a></div></section>`:'';
@@ -109,6 +140,7 @@ export function home(all) {
     ${karteNotice}
     ${section('資料別のアルバム',allLink,`<div class="collection-grid">${tiles}</div>`)}
     ${section('古写真帖をひらく',oldPhotosLink,`<div class="exhibit-grid memories-grid">${highlights.map(card).join('')}</div>`)}
+    ${historyReading()}
     <div class="two-notes">
       <section class="library-note">
         <h2>写真の向こうにある資料</h2>
@@ -236,13 +268,14 @@ export function detail(all,p) {
         <dl id="source"><dt>場所・年代</dt><dd>${esc(p.place)} ／ ${esc(p.dateLabel)} ${esc(p.dateEvidence)}</dd><dt>出典・撮影者・提供者</dt><dd>${esc(p.credit)} ${p.source?'<a href="'+esc(p.source)+'">原資料</a>':''}</dd>${p.sourceTitle?'<dt>原作品名</dt><dd>'+esc(p.sourceTitle)+'</dd>':''}<dt>利用条件・加工</dt><dd>${p.licenseUrl?'<a href="'+esc(p.licenseUrl)+'">'+esc(p.license)+'</a>':esc(p.license||'提供者の許諾による掲載')}。${esc(p.change)} ${p.licenseUrl?.includes('/by-sa/')?'掲載画像にも、上記と同じ表示・継承ライセンスを適用します。':''} ${p.evidence?'<a href="'+esc(p.evidence)+'">掲載根拠</a>':''}</dd><dt>写真番号</dt><dd>${esc(p.id)}</dd></dl>
       </section>
     </div>
+    ${relatedReading[p.id]?historyReading(p):''}
     ${consultation('photo')}
     <p class="photo-maker small-meta">湖西懐かし写真館の作成者　<a href="/creator/">大石浩之について</a></p>
   </article>`,{description:p.caption,image:strongest});
 }
 export function feature(all) {
  const stations=['新所原','鷲津','新居町','知波田','大森','アスモ前'];
- return layout('駅前のアルバム','/features/kosai-station/',`<div class="wrap page-inner">${pathNav('駅前のアルバム')}<span class="red-tag">通学も、帰省も、この駅から。</span><h1>湖西の駅前アルバム</h1><p class="page-lead">平成元年の新所原駅旧駅舎から、鷲津・新居町の駅前、天竜浜名湖鉄道の小さな駅まで。写真に写る駅の名前と年代から、思い出をたどります。</p>${stations.map(name=>{const rows=all.filter(p=>p.collection==='駅と鉄道の記憶'&&(p.title+p.place).includes(name)).sort((a,b)=>a.year-b.year);return rows.length?section(name+'駅の記録','',`<div class="exhibit-grid">${rows.map(card).join('')}</div>`):''}).join('')}<section class="contribute-note"><h2>あなたのアルバムに、昔の駅前はありませんか。</h2><p>通勤の列車、待ち合わせた店、建て替わる前の駅舎。一枚から、覚えていることと一緒にお寄せください。</p><a class="ink-button" href="/okuru/">写真を寄稿・相談する</a></section>${consultation('station')}</div>`);
+ return layout('駅前のアルバム','/features/kosai-station/',`<div class="wrap page-inner">${pathNav('駅前のアルバム')}<span class="red-tag">通学も、帰省も、この駅から。</span><h1>湖西の駅前アルバム</h1><p class="page-lead">平成元年の新所原駅旧駅舎から、鷲津・新居町の駅前、天竜浜名湖鉄道の小さな駅まで。写真に写る駅の名前と年代から、思い出をたどります。</p>${stations.map(name=>{const rows=all.filter(p=>p.collection==='駅と鉄道の記憶'&&(p.title+p.place).includes(name)).sort((a,b)=>a.year-b.year);return rows.length?section(name+'駅の記録','',`<div class="exhibit-grid">${rows.map(card).join('')}</div>`):''}).join('')}<section class="contribute-note"><h2>あなたのアルバムに、昔の駅前はありませんか。</h2><p>通勤の列車、待ち合わせた店、建て替わる前の駅舎。一枚から、覚えていることと一緒にお寄せください。</p><a class="ink-button" href="/okuru/">写真を寄稿・相談する</a></section>${historyReading({id:'shinjohara-1989'})}${consultation('station')}</div>`);
 }
 export function library() {
  const sources=[['静岡県オープンデータ「静岡のみずべ100選」','白須賀海岸と浜名川・日ヶ崎地区親水公園。画像ファイルに付されたCC BYの表示と、県の利用規約を確認して掲載しています。撮影年は分からないため、公開年と区別しています。','https://opendata.pref.shizuoka.jp/dataset/fuji-160.html'],['湖西市「湖西市のあゆみ」','市制施行の祝賀アーチがある昭和47年の鷲津の街角や、二俣線などを掲載した公式の記録です。市の掲載写真は当館へ転載せず、原ページへご案内します。','https://www.city.kosai.shizuoka.jp/shiseijoho/shinoshokai/3187.html'],['国立国会図書館「錦絵と写真でめぐる日本の名所」','大正7年刊の写真帖に収められた新居・白須賀。撮影年と刊行年を区別し、原資料と公開区分を各写真ページに記載しています。','https://www.ndl.go.jp/landmarks/'],['国土地理院「地図・空中写真閲覧サービス」','戦後から平成までの湖西・新居周辺の空中写真。撮影年月日と原版番号を確認し、同じ写真を重複収録しないよう地域と時代で整理しています。','https://service.gsi.go.jp/map-photos/'],['Wikimedia Commons','撮影者が公開ライセンスで提供した駅や町並みの写真。一枚ごとに作者・日付・利用条件・原画像へのリンクを掲載しています。','https://commons.wikimedia.org/wiki/Category:Kosai,_Shizuoka']];
