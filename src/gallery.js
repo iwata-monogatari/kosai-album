@@ -93,7 +93,7 @@ export function home(all) {
   const pickIds=['ndl-arai-1918','ndl-shirasuka-1918','myoryuji-1933'];
   const highlights=pickIds.map(id=>all.find(p=>p.id===id)).filter(Boolean);
   const additions=all.filter(p=>p.addedOn==='2026-11-21');
-  const newPicks=[...additions.filter(p=>p.collection==='古写真帖').slice(0,1),...additions.filter(p=>p.collection!=='古写真帖').slice(0,2)];
+  const newPicks=[additions.find(p=>p.id==='ndl-arai-sekisho-1914')||additions.find(p=>p.collection==='古写真帖'),...additions.filter(p=>p.collection!=='古写真帖').slice(0,2)].filter(Boolean);
   const oldPhotosLink=`<a class="more" href="${esc(searchHref('collection','古写真帖'))}">古写真帖へ</a>`;
   return layout(site,'/',`<div class="wrap collection-home">
     ${cover}
