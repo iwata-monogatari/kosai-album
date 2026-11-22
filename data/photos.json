@@ -9416,5 +9416,35 @@
     "colorPeriod": false,
     "addedOn": "2026-11-21",
     "addedBatch": "2026-11-21-5"
+  },
+  {
+    "id": "arai-takaraya-waterfront-glass-plate",
+    "title": "舟の泊まる新居の水辺と宝屋",
+    "place": "新居",
+    "theme": "街道・町並み",
+    "collection": "古写真帖",
+    "era": "大正～昭和初期",
+    "year": null,
+    "dateLabel": "大正～昭和初期（撮影年不詳）",
+    "caption": "水辺に小舟がつながれ、その向こうに瓦屋根の旅館・宝屋が見えます。右手の松の辺りが新居関所です。『特別史跡新居関跡保存活用計画』に収録されたガラス乾板の写真で、水辺に面した宿の姿を伝えています。",
+    "alt": "水辺に泊まる木の舟と、その向こうに立つ瓦屋根の建物。建物の姿が水面に映っています。",
+    "source": "https://www.city.kosai.shizuoka.jp/material/files/group/22/202402araisekisyo_hozonkeikaku_Part1_shukushou.pdf#page=36",
+    "sourceTitle": "写真乾板宝屋風景（大正～昭和初期）",
+    "credit": "湖西市教育委員会『特別史跡新居関跡保存活用計画』（2024年）30頁 図2-18掲載写真（撮影者不詳）",
+    "license": "写真原版の著作権保護期間満了（日本）",
+    "licenseUrl": "https://www.cric.or.jp/db/domestic/old_index.html",
+    "evidence": "https://www.jstage.jst.go.jp/article/jsda/7/4/7_173/_article/-char/ja/",
+    "change": "資料から写真部分を抽出し、原寸と表示用縮小版をWebPに変換。",
+    "dateEvidence": "湖西市教育委員会の原資料30頁は、乾板を大正から昭和初期の写真として紹介。撮影年の詳細は不詳。",
+    "width": 327,
+    "height": 194,
+    "sizes": [
+      480,
+      1280
+    ],
+    "type": "地上写真",
+    "colorPeriod": false,
+    "addedOn": "2026-11-22",
+    "addedBatch": "2026-11-22-1"
   }
 ]
