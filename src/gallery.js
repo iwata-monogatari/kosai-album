@@ -94,6 +94,54 @@ const browseLinks = (key,values) => values.map(value=>`<a href="${esc(searchHref
 
 const stationPath='/features/kosai-station/';
 const topics = {
+  '/features/washizu/': {
+    label:'鷲津の町並み・製糸場',
+    title:'鷲津の昔の写真｜鷲津駅・宮崎製糸場・浜名湖の桟橋',
+    lead:'大正初期の鷲津停車場、1912年刊の資料に載る宮崎製糸場、湖岸の旅館と昭和初期の桟橋。静岡県湖西市・鷲津の駅、産業、水辺を出典付きの古写真でたどります。',
+    groups:[
+      ['鷲津停車場と駅前の町並み','大正初期と題記のある写真帖では、柵に沿う駅前の道と線路から広がる市街地が分かります。2008年の駅舎とも見比べられます。',
+        ['shizulib-washizu-station-taisho','shizulib-washizu-panorama-taisho','washizu-2008']],
+      ['浜名湖を背にした宮崎製糸場','『静岡県蚕糸業沿革史』掲載の外観と内景です。煙突のある工場と、機械の両側で働く人々が写ります。',
+        ['ndl-miyazaki-lakeside-1912','ndl-miyazaki-workers-1912','ndl-kizu-silk-office-1912']],
+      ['湖岸の旅館から昭和初期の桟橋へ','河井旅館の写真には湖岸の石積みと舟が残ります。1930年6月1日の桟橋の写真では、船が着く桟橋に人が集まっています。二つの写真は出典も撮影地点も異なります。',
+        ['shizulib-kawai-lakeside','ndl-washizu-pier-1930']],
+      ['木立の参道と本興寺','1914年刊の郡誌に載る参道と、2012年に撮影された山門です。撮影地点が異なるので、通りの奥行きと建物の違いを手掛かりに見られます。',
+        ['ndl-honkoji-1914','commons-b3e8756d2bf6']]
+    ],
+    reading:[['/discover/honkouji/','本興寺の拝観と鷲津駅からの行き方'],['/discover/kosai-old-photos/','鷲津・湖西の昔の地図と写真の探し方']],
+    filter:['q','鷲津']
+  },
+  '/features/shinjohara/': {
+    label:'新所原駅の旧駅舎と天浜線',
+    title:'新所原駅の昔の写真｜旧駅舎と天浜線、1989年から2017年',
+    lead:'1989年12月の新所原駅、2011年に撮影された旧駅舎、橋上化後の2017年の駅。静岡県湖西市の新所原駅を、天竜浜名湖鉄道の車両やアスモ前駅の写真とともに見比べます。',
+    groups:[
+      ['1989年と2011年の新所原駅舎','1989年の駅前には、瓦屋根とキヨスク、タクシーが写っています。2011年の旧駅舎とホームでは、駅前とは別に線路側の景色を確認できます。',
+        ['shinjohara-1989','commons-a136cf456007','commons-1b9fe359b410']],
+      ['橋上化後の駅と南口','南北自由通路とJR橋上駅舎は2016年11月に供用が始まりました。2017年1月撮影の2枚で、建物と南側のようすを見比べられます。',
+        ['shinjohara-2017-01','shinjohara-2017-02']],
+      ['天浜線の車両とアスモ前駅','2005年・2008年・2013年の車両写真と、2009年の隣駅・アスモ前の記録です。車両の番号や窓の並び、駅ごとのホームの違いを見られます。',
+        ['commons-17b58981e99b','commons-e7d1b3ea853e','shinjohara-th2103-2013','asumomae-2009-02']]
+    ],
+    sources:[['https://www.jec-info.co.jp/201612/685/','新所原駅南北自由通路および橋上駅舎の供用開始（電気技術開発）'],['https://www.tenhama.co.jp/about/station/shinjyohara/','新所原駅（天竜浜名湖鉄道）']],
+    reading:[['/discover/tenhama/','天浜線の駅と立ち寄り先'],['/discover/kosai-mountains/','新所原周辺から湖西連峰をたどる'],['/discover/kosai-old-photos/','湖西の空中写真・地図の探し方']],
+    filter:['q','新所原']
+  },
+  '/features/hamanako-waterfront/': {
+    label:'浜名湖の漁と湖岸',
+    title:'浜名湖の昔の漁と湖岸の写真｜囲目網・新居の漁労小屋・養殖棚',
+    lead:'1930年に撮影された浜名湖の囲目網漁と鷲津の桟橋、1935年の新居の漁労小屋、2012年の養殖棚。湖西側の浜名湖と遠州灘に残された水辺の記録を、時代と出典を分けて紹介します。',
+    groups:[
+      ['1930年6月1日の浜名湖と鷲津の桟橋','同じ巡幸記録に、鷲津の桟橋と湖上で船が並ぶ漁の場面が掲載されています。囲目網は入出に伝わった漁法で、写真の湖上の撮影地点は分かっていません。',
+        ['ndl-hamanako-kakome-fishing-1930','ndl-washizu-pier-1930']],
+      ['1935年の新居海岸と漁労小屋','砂地に並ぶ小屋の背後にクロマツ林が見える県資料の写真です。大正初期の源太山からの眺望は、遠州灘側の砂浜と異なる、新居の湖側の眺めを伝えます。',
+        ['arai-fishing-huts-1935','shizulib-gentayama-view-taisho']],
+      ['養殖棚と新居の岸壁','2012年に新居側から撮影された養殖棚の写真と、岸壁・桟橋を写した撮影年不詳の空撮です。遠くの山並みや水際の構造を見られます。',
+        ['commons-8dcf80a46256','commons-ef48cf33394e']]
+    ],
+    reading:[['/discover/kosai-food/','浜名湖の食・漁業を知る'],['/discover/hamanako-imagire/','浜名湖と今切口の見どころ'],['/discover/kaikokan/','新居の海湖館と海釣公園の利用案内']],
+    filter:['q','浜名湖']
+  },
   '/features/arai-shuku/': {
     label:'新居宿・新居関所',
     title:'新居宿・新居関所の古写真',
@@ -184,8 +232,10 @@ export function topicPage(all,path) {
       <h2>関連する写真と資料</h2>
       <p><a href="${esc(searchHref(...topic.filter))}">${esc(topic.label)}の写真を一覧から探す</a></p>
       <p><a href="/library/">原資料と出典の案内を見る</a></p>
+      ${topic.sources ? `<ul>${topic.sources.map(([url,label])=>`<li><a href="${esc(url)}">${esc(label)}</a></li>`).join('')}</ul>` : ''}
     </aside>
     <aside class="library-note"><h2>湖西ライフハックで今のまちを訪ねる</h2>${readingList(topic.reading)}</aside>
+    <nav class="browse-links" aria-label="ほかの写真特集">${topicPaths.filter(other=>other!==path).map(other=>topicLink(other,topics[other].label)).join('')}</nav>
     ${sharePanel(path,topic.title,'この特集を共有')}
   </article>`,{description:topic.lead,image:cover&&photoImage(cover,true),imageAlt:cover&&(cover.alt||cover.title)});
 }
