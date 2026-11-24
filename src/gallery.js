@@ -16,15 +16,69 @@ const publicPages = ['/', '/photos/', '/features/kosai-station/', '/library/', '
 export function layout(title,path,body,options={}) {
   const trackPage = !options.private && (publicPages.includes(path) || /^\/photos\/[\w-]+\/$/.test(path));
   const trackerTag = '';
+  const imageMeta = options.image?'<meta property="og:image" content="'+origin+esc(options.image)+'"><meta name="twitter:card" content="summary_large_image">'+(options.imageAlt?'<meta property="og:image:alt" content="'+esc(options.imageAlt)+'">':''):'';
   const karteFooter = options.private ? '' : `<a href="${esc(karteUrl+'&utm_content=footer')}">実家・空き家の相談｜ふじがおか実家カルテ</a>`;
-  return `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title===site||path==='/'?title:title+'｜'+site)}</title><meta name="description" content="${esc(options.description||desc)}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(options.description||desc)}"><meta property="og:url" content="${origin+esc(path)}"><link rel="canonical" href="${origin+esc(path)}">${options.image?'<meta property="og:image" content="'+origin+esc(options.image)+'">':''}${options.private?'<meta name="robots" content="noindex,nofollow">':''}<link rel="icon" type="image/svg+xml" sizes="any" href="/mark.svg?v=20261119-gothic"><link rel="stylesheet" href="/style.css?v=20261119-gothic"><link rel="stylesheet" href="/album.css?v=20261121-kosai2"><link rel="stylesheet" href="/album-header.css?v=20261119-gothic">${options.script||''}${trackerTag}</head><body><a class="skip" href="#main">本文へ</a>${albumHeader({site, mark:"湖", area:"湖西・新居", theme:"kosai", links:[["/photos/", "写真を探す"], ["/features/kosai-station/", "駅前のアルバム"], ["/library/", "資料をたどる"]], consult:'/consult/', path:path})}<main id="main">${body}</main><footer class="site-foot"><div class="wrap footer-guide"><div><a class="brand" href="/">${site}</a><small>静岡県湖西市・旧新居町の地域写真アーカイブ</small></div><nav class="nav" aria-label="写真館のご案内"><a href="/creator/">大石浩之のプロフィール</a><a href="/about/">写真館について</a><a href="/usage/">写真の利用</a><a href="/privacy/">個人情報</a><a href="/contact/">お問い合わせ</a><a href="https://iwataalb.atawi.link/">磐田懐かし写真館</a><a href="https://kosai.enshu-lifehack.com/">湖西ライフハック</a>${karteFooter}</nav></div></footer></body></html>`;
+  return `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title===site||path==='/'?title:title+'｜'+site)}</title><meta name="description" content="${esc(options.description||desc)}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(options.description||desc)}"><meta property="og:url" content="${origin+esc(path)}"><link rel="canonical" href="${origin+esc(path)}">${imageMeta}${options.private?'<meta name="robots" content="noindex,nofollow">':''}<link rel="icon" type="image/svg+xml" sizes="any" href="/mark.svg?v=20261119-gothic"><link rel="stylesheet" href="/style.css?v=20261119-gothic"><link rel="stylesheet" href="/album.css?v=20261121-kosai2"><link rel="stylesheet" href="/album-header.css?v=20261119-gothic">${options.script||''}${trackerTag}</head><body><a class="skip" href="#main">本文へ</a>${albumHeader({site, mark:"湖", area:"湖西・新居", theme:"kosai", links:[["/photos/", "写真を探す"], ["/features/kosai-station/", "駅前のアルバム"], ["/library/", "資料をたどる"]], consult:'/consult/', path:path})}<main id="main">${body}</main><footer class="site-foot"><div class="wrap footer-guide"><div><a class="brand" href="/">${site}</a><small>静岡県湖西市・旧新居町の地域写真アーカイブ</small></div><nav class="nav" aria-label="写真館のご案内"><a href="/creator/">大石浩之のプロフィール</a><a href="/about/">写真館について</a><a href="/usage/">写真の利用</a><a href="/privacy/">個人情報</a><a href="/contact/">お問い合わせ</a><a href="https://iwataalb.atawi.link/">磐田懐かし写真館</a><a href="https://kosai.enshu-lifehack.com/">湖西ライフハック</a>${karteFooter}</nav></div></footer></body></html>`;
 }
 function media(p,w) {
   return p.version?`/media/${p.id}/${p.version}/${w}`:`/archive/${p.id}-${w}.webp`;
 }
+function photoImage(p,large=false) {
+  const sizes=p.sizes||[480];
+  return media(p,large?(sizes.includes(1280)?1280:sizes.at(-1)):sizes[0]);
+}
 function img(p,large=false,first=false) {
-  const ws=p.sizes||[480],w=large?(ws.includes(1280)?1280:ws.at(-1)):ws[0];
-  return `<img src="${media(p,w)}" width="${p.width||900}" height="${p.height||600}" alt="${esc(p.alt||p.title)}" ${first?'fetchpriority="high"':'loading="lazy"'}>`;
+  return `<img src="${photoImage(p,large)}" width="${p.width||900}" height="${p.height||600}" alt="${esc(p.alt||p.title)}" ${first?'fetchpriority="high"':'loading="lazy"'}>`;
+}
+function photoDescription(p) {
+  const context=[p.place,p.dateLabel].filter(value=>value&&!p.caption?.includes(value)).join('・');
+  return [context,p.caption].filter(Boolean).join('。');
+}
+function imageMetadata(p) {
+  const data={
+    '@context':'https://schema.org',
+    '@type':'ImageObject',
+    contentUrl:origin+photoImage(p,true),
+    name:p.title,
+    description:p.caption,
+    creditText:p.credit,
+    license:/^https?:\/\//.test(p.licenseUrl||'')?p.licenseUrl:undefined
+  };
+  return '<script type="application/ld+json">'+JSON.stringify(data).replaceAll('<','\\u003c')+'</script>';
+}
+function sharePanel(path,title,label) {
+  return `<details class="library-note album-share"><summary>${esc(label)}</summary>
+    <p><label>共有用リンク<br><input type="url" readonly value="${esc(origin+path)}" style="width:min(100%, 32rem)"></label></p>
+    <p><button type="button" data-copy disabled>リンクをコピー</button> <button type="button" data-share hidden>LINEなどで共有</button></p>
+    <p class="small-meta" role="status"></p>
+    <script>
+    (() => {
+      const panel=document.currentScript.closest('.album-share');
+      const field=panel.querySelector('input'),copy=panel.querySelector('[data-copy]');
+      const share=panel.querySelector('[data-share]'),status=panel.querySelector('[role="status"]');
+      const url=field.value,title=${JSON.stringify(title).replaceAll('<','\\u003c')};
+      copy.disabled=false;
+      copy.addEventListener('click',async()=>{
+        try {
+          await navigator.clipboard.writeText(url);
+          status.textContent='リンクをコピーしました。';
+        } catch {
+          field.focus();
+          field.select();
+          status.textContent='リンクを選択しました。端末のコピー操作で保存できます。';
+        }
+      });
+      if(typeof navigator.share==='function' && (!navigator.canShare || navigator.canShare({url,title}))){
+        share.hidden=false;
+        share.addEventListener('click',async()=>{
+          try { await navigator.share({url,title}); }
+          catch(error) {
+            if(error.name!=='AbortError')status.textContent='「リンクをコピー」で共有できます。';
+          }
+        });
+      }
+    })();
+    </script></details>`;
 }
 const pathNav=label=>`<p class="crumb"><a href="/">写真館</a><span>／</span>${esc(label)}</p>`;
 function card(p) {
@@ -116,7 +170,17 @@ export function topicPage(all,path) {
       ${topic.reading?`<p><a href="https://kosai.enshu-lifehack.com/discover/${topic.reading[0]}/">${esc(topic.reading[1])}</a></p>`:''}
       <p><a href="/library/">原資料と出典の案内を見る</a></p>
     </aside>
-  </article>`,{description:topic.lead,image:cover&&media(cover,cover.sizes.at(-1))});
+    ${sharePanel(path,topic.title,'この特集を共有')}
+  </article>`,{description:topic.lead,image:cover&&photoImage(cover,true),imageAlt:cover&&(cover.alt||cover.title)});
+}
+export function sitemap(all) {
+  const pages=['/consult/','/','/creator/','/library/','/photos/',stationPath,'/okuru/','/about/','/usage/','/privacy/','/contact/',...topicPaths];
+  const url=(path,image='')=>'<url><loc>'+esc(origin+path)+'</loc>'+image+'</url>';
+  return '<?xml version="1.0" encoding="UTF-8"?>'
+    +'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">'
+    +pages.map(path=>url(path)).join('')
+    +all.map(photo=>url(href(photo),'<image:image><image:loc>'+esc(origin+photoImage(photo,true))+'</image:loc></image:image>')).join('')
+    +'</urlset>';
 }
 
 function homeSearch(count) {
@@ -226,6 +290,7 @@ export function home(all) {
     ${section('資料別のアルバム',allLink,`<div class="collection-grid">${tiles}</div>`)}
     ${section('古写真帖をひらく',oldPhotosLink,`<div class="exhibit-grid memories-grid">${highlights.map(card).join('')}</div>`)}
     ${historyReading()}
+    ${sharePanel('/',site,'この写真館を共有')}
     <div class="two-notes">
       <section class="library-note">
         <h2>写真の向こうにある資料</h2>
@@ -243,7 +308,7 @@ export function home(all) {
       <div><strong>湖西懐かし写真館の作成者　大石浩之</strong><p>住まいと介護の現場から、遠州の歴史を記録する活動へ。</p></div>
       <a href="/creator/">大石浩之を知る</a>
     </aside>
-  </div>`,{image:hero&&media(hero,hero.sizes.at(-1))});
+  </div>`,{image:hero&&photoImage(hero,true),imageAlt:hero&&(hero.alt||hero.title)});
 }
 function norm(s) {return String(s||'').normalize('NFKC').toLowerCase();}
 function tokens(q) {return norm(q).trim().split(/\s+/).filter(Boolean);}
@@ -350,6 +415,7 @@ export function detail(all,p) {
     <h1>${esc(p.title)}</h1>
     <div class="photo-title-meta"><p class="small-meta">${esc(p.dateLabel)}　／　${esc(p.place)}</p><a class="more" href="#source">出典・利用条件へ</a></div>
     <figure class="single-plate"><a href="${strongest}" aria-label="${esc(p.title)}を原寸で開く">${img(p,true,true)}</a><figcaption><span>${esc(p.credit)}</span><a href="${strongest}">画像を大きく見る</a></figcaption></figure>
+    ${sharePanel(href(p),p.title,'この写真を共有')}
     ${photoNavigation(siblings,i,p)}
     <div class="photo-record">
       <div class="photo-story"><h2>この写真について</h2><p>${esc(p.caption)}</p>${p.memory?'<p>'+esc(p.memory)+'</p>':''}<p><a href="/contact/?photo=${encodeURIComponent(p.id)}">この写真について伝える</a></p></div>
@@ -362,13 +428,13 @@ export function detail(all,p) {
     ${relatedReading[p.id]?historyReading(p):''}
     ${consultation('photo')}
     <p class="photo-maker small-meta">湖西懐かし写真館の作成者　<a href="/creator/">大石浩之について</a></p>
-  </article>`,{description:p.caption,image:strongest});
+  </article>`,{description:photoDescription(p),image:photoImage(p,true),imageAlt:p.alt||p.title,script:imageMetadata(p)});
 }
 export function feature(all) {
  const stations=['新所原','鷲津','新居町','知波田','大森','アスモ前'];
  const cover=all.find(photo=>photo.id==='shinjohara-1989');
  const stationDescription='平成元年の新所原駅旧駅舎、2008年の鷲津駅・新居町駅、天竜浜名湖鉄道の知波田・大森・アスモ前。湖西市の駅舎と駅前を、撮影年と出典が分かる写真でたどります。';
- return layout('新所原・鷲津・新居町など湖西の昔の駅写真',stationPath,`<div class="wrap page-inner">${pathNav('駅前のアルバム')}<span class="red-tag">通学も、帰省も、この駅から。</span><h1>湖西の駅前アルバム｜新所原・鷲津・新居町</h1><p class="page-lead">平成元年の新所原駅旧駅舎から、鷲津・新居町の駅前、天竜浜名湖鉄道の小さな駅まで。写真に写る駅の名前と年代から、思い出をたどります。</p>${stations.map(name=>{const rows=all.filter(p=>p.collection==='駅と鉄道の記憶'&&(p.title+p.place).includes(name)).sort((a,b)=>a.year-b.year);return rows.length?section(name+'駅の記録','',`<div class="exhibit-grid">${rows.map(card).join('')}</div>`):''}).join('')}<section class="contribute-note"><h2>あなたのアルバムに、昔の駅前はありませんか。</h2><p>通勤の列車、待ち合わせた店、建て替わる前の駅舎。一枚から、覚えていることと一緒にお寄せください。</p><a class="ink-button" href="/okuru/">写真を寄稿・相談する</a></section>${historyReading({id:'shinjohara-1989'})}${consultation('station')}</div>`,{description:stationDescription,image:cover&&media(cover,cover.sizes.at(-1))});
+ return layout('新所原・鷲津・新居町など湖西の昔の駅写真',stationPath,`<div class="wrap page-inner">${pathNav('駅前のアルバム')}<span class="red-tag">通学も、帰省も、この駅から。</span><h1>湖西の駅前アルバム｜新所原・鷲津・新居町</h1><p class="page-lead">平成元年の新所原駅旧駅舎から、鷲津・新居町の駅前、天竜浜名湖鉄道の小さな駅まで。写真に写る駅の名前と年代から、思い出をたどります。</p>${stations.map(name=>{const rows=all.filter(p=>p.collection==='駅と鉄道の記憶'&&(p.title+p.place).includes(name)).sort((a,b)=>a.year-b.year);return rows.length?section(name+'駅の記録','',`<div class="exhibit-grid">${rows.map(card).join('')}</div>`):''}).join('')}<section class="contribute-note"><h2>あなたのアルバムに、昔の駅前はありませんか。</h2><p>通勤の列車、待ち合わせた店、建て替わる前の駅舎。一枚から、覚えていることと一緒にお寄せください。</p><a class="ink-button" href="/okuru/">写真を寄稿・相談する</a></section>${historyReading({id:'shinjohara-1989'})}${consultation('station')}${sharePanel(stationPath,'湖西の駅前アルバム','この特集を共有')}</div>`,{description:stationDescription,image:cover&&photoImage(cover,true),imageAlt:cover&&(cover.alt||cover.title)});
 }
 export function library() {
  const sources=[['静岡県オープンデータ「静岡のみずべ100選」','白須賀海岸と浜名川・日ヶ崎地区親水公園。画像ファイルに付されたCC BYの表示と、県の利用規約を確認して掲載しています。撮影年は分からないため、公開年と区別しています。','https://opendata.pref.shizuoka.jp/dataset/fuji-160.html'],['湖西市「湖西市のあゆみ」','市制施行の祝賀アーチがある昭和47年の鷲津の街角や、二俣線などを掲載した公式の記録です。市の掲載写真は当館へ転載せず、原ページへご案内します。','https://www.city.kosai.shizuoka.jp/shiseijoho/shinoshokai/3187.html'],['国立国会図書館「錦絵と写真でめぐる日本の名所」','大正7年刊の写真帖に収められた新居・白須賀。撮影年と刊行年を区別し、原資料と公開区分を各写真ページに記載しています。','https://www.ndl.go.jp/landmarks/'],['国土地理院「地図・空中写真閲覧サービス」','戦後から平成までの湖西・新居周辺の空中写真。撮影年月日と原版番号を確認し、同じ写真を重複収録しないよう地域と時代で整理しています。','https://service.gsi.go.jp/map-photos/'],['Wikimedia Commons','撮影者が公開ライセンスで提供した駅や町並みの写真。一枚ごとに作者・日付・利用条件・原画像へのリンクを掲載しています。','https://commons.wikimedia.org/wiki/Category:Kosai,_Shizuoka']];

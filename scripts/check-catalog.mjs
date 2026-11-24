@@ -18,7 +18,10 @@ for(const path of topicPaths){
  const topic=await fetchPage(path);
  assert.ok(topic.includes(`<link rel="canonical" href="${canonicalOrigin}${path}">`),path+' canonical');
  assert.ok((topic.match(/class="plate" href="\/photos\/[-\w]+\//g)||[]).length>1,path+' missing photos');
+ assert.ok(topic.includes('この特集を共有'),path+' missing share control');
 }
+assert.ok(topicSitemap.includes('xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"'));
+assert.equal((topicSitemap.match(/<image:loc>/g)||[]).length,photos.length);
 assert.ok(secondPage.includes(`<link rel="canonical" href="${canonicalOrigin}/photos/?page=2">`));
 assert.ok(filtered.includes(`<link rel="canonical" href="${canonicalOrigin}/photos/">`));
 let checkedLinks=0;
@@ -36,6 +39,14 @@ for(const path of allPaths){
  if(path.startsWith('/photos/')&&path!='/photos/'){
   assert.ok(html.includes('utm_content=photo_apply'),path+' missing consultation');
   assert.ok(html.includes('出典・利用条件'),path);
+  assert.ok(html.includes('この写真を共有'),path+' missing share control');
+  assert.ok(html.includes(`value="${canonicalOrigin+path}"`),path+' missing canonical share URL');
+  const photo=photos.find(row=>row.id===path.split('/')[2]);
+  const metadata=JSON.parse(html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)?.[1]);
+  assert.equal(metadata['@type'],'ImageObject');
+  assert.equal(metadata.creditText,photo.credit);
+  assert.ok(html.includes(`src="${new URL(metadata.contentUrl).pathname}"`),path+' image metadata URL differs');
+  assert.ok(topicSitemap.includes(`<loc>${canonicalOrigin+path}</loc><image:image><image:loc>${metadata.contentUrl}</image:loc>`),path+' missing from image sitemap');
  }
 }
 const search=await worker.fetch(new Request(canonicalOrigin+'/photos/?q='+encodeURIComponent('新居')),{}),body=await search.text();
