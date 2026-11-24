@@ -1,14 +1,26 @@
 import assert from 'node:assert/strict';
 import {readFile,stat} from 'node:fs/promises';
 import worker from '../src/index.js';
+import {topicPaths} from '../src/gallery.js';
 import photos from '../data/photos.json' with {type:'json'};
 assert.equal(new Set(photos.map(p=>p.id)).size,photos.length,'duplicate photo IDs');
-const allPaths=['/','/photos/','/features/kosai-station/','/library/','/consult/','/creator/','/about/','/usage/','/privacy/','/okuru/','/contact/',...photos.map(p=>'/photos/'+p.id+'/')];
+const allPaths=['/','/photos/','/features/kosai-station/',...topicPaths,'/library/','/consult/','/creator/','/about/','/usage/','/privacy/','/okuru/','/contact/',...photos.map(p=>'/photos/'+p.id+'/')];
 for(const photo of photos){
  for(const field of ['title','place','dateLabel','caption','source','credit','license','licenseUrl'])assert.ok(photo[field],photo.id+' missing '+field);
  for(const size of photo.sizes)assert.ok((await stat(`public/archive/${photo.id}-${size}.webp`)).size>100,photo.id);
 }
 const canonicalOrigin='https://kosaialb.atawi.link';
+const fetchPage=async path=>(await worker.fetch(new Request(canonicalOrigin+path),{})).text();
+const [home, topicSitemap, secondPage, filtered] = await Promise.all(['/', '/sitemap.xml', '/photos/?page=2', '/photos/?q=新居&page=2'].map(fetchPage));
+for(const path of topicPaths){
+ assert.ok(home.includes(`href="${path}"`),path+' missing on home');
+ assert.ok(topicSitemap.includes(`<loc>${canonicalOrigin}${path}</loc>`),path+' missing in sitemap');
+ const topic=await fetchPage(path);
+ assert.ok(topic.includes(`<link rel="canonical" href="${canonicalOrigin}${path}">`),path+' canonical');
+ assert.ok((topic.match(/class="plate" href="\/photos\/[-\w]+\//g)||[]).length>1,path+' missing photos');
+}
+assert.ok(secondPage.includes(`<link rel="canonical" href="${canonicalOrigin}/photos/?page=2">`));
+assert.ok(filtered.includes(`<link rel="canonical" href="${canonicalOrigin}/photos/">`));
 let checkedLinks=0;
 for(const path of allPaths){
  const response=await worker.fetch(new Request(canonicalOrigin+path),{TURNSTILE_SITE:'test-public-key'});

@@ -3,7 +3,7 @@ import retention from '../ops/retention.js';
 import {operatorLogin} from './operator.js';
 import catalog from './catalog.js';
 import {packedImage} from './archive-pack.js';
-import {home,listing,detail,feature,library,consultPage,layout,esc,origin} from './gallery.js';
+import {home,listing,detail,feature,topicPaths,topicPage,library,consultPage,layout,esc,origin} from './gallery.js';
 import {intake,json,stmt} from './intake.js';
 import {admin,review} from './editor.js';
 import {page} from './forms.js';
@@ -58,14 +58,16 @@ async function serve(req,env){
  const extra=page(path,env);if(extra)return html(extra);
  if(path==='/library/')return html(library(u));
  const id=path.match(/^\/photos\/([\w-]+)\/$/)?.[1];
- if(!id&&!['/','/photos/','/features/kosai-station/','/sitemap.xml'].includes(path)){
+ const isTopic=topicPaths.includes(path);
+ if(!id&&!isTopic&&!['/','/photos/','/features/kosai-station/','/sitemap.xml'].includes(path)){
  if(/^\/(?:(?:gallery|desk|review|forms)\.js|style\.css|mark\.svg|operator\.js|album\.css)$/.test(path))return env.ASSETS.fetch(req);return absent()}
  const db=env.DB?.withSession?env.DB.withSession('first-primary'):env.DB;
  const live=db?(await db.prepare("SELECT e.metadata FROM publications p JOIN editions e ON e.id=p.version WHERE p.state='public' AND e.decision='agree' ORDER BY e.issued DESC").all()).results.map(r=>JSON.parse(r.metadata)):[];
  const stops=db?(await db.prepare('SELECT id,state FROM archive_stops').all()).results:[],blocked=new Map(stops.map(r=>[r.id,r.state]));
  const available=blocked.size?catalog.filter(p=>!blocked.has(p.id)):catalog;
  const all=live.length?available.concat(live):available;if(id&&blocked.has(id))return absent(blocked.get(id)==='withdrawn'?410:404);if(path==='/')return html(home(all));if(path==='/photos/')return html(listing(all,u));if(path==='/features/kosai-station/')return html(feature(all));
- if(path==='/sitemap.xml'){const paths=['/consult/','/','/creator/','/library/','/photos/','/features/kosai-station/','/okuru/','/about/','/usage/','/privacy/','/contact/',...all.map(p=>'/photos/'+p.id+'/')];return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+paths.map(p=>'<url><loc>'+origin+esc(p)+'</loc></url>').join('')+'</urlset>',{headers:{'content-type':'application/xml','cache-control':'no-store'}})}
+ if(isTopic)return html(topicPage(all,path));
+ if(path==='/sitemap.xml'){const paths=['/consult/','/','/creator/','/library/','/photos/','/features/kosai-station/','/okuru/','/about/','/usage/','/privacy/','/contact/',...topicPaths,...all.map(p=>'/photos/'+p.id+'/')];return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+paths.map(p=>'<url><loc>'+origin+esc(p)+'</loc></url>').join('')+'</urlset>',{headers:{'content-type':'application/xml','cache-control':'no-store'}})}
  const p=catalogById.get(id)||live.find(p=>p.id===id);if(p)return html(detail(all,p,u));const gone=db&&id.startsWith('c-')&&await stmt(db,"SELECT 1 FROM publications WHERE id=? AND state='withdrawn'",id).first();return absent(gone?410:404)
 }
 export default {scheduled:retention.scheduled,async fetch(req,env){let r;try{r=await serve(req,env)}catch(e){r=json({error:e.status?e.message:'処理を完了できませんでした。入力を保ったまま、もう一度お試しください。'},e.status||503)}
