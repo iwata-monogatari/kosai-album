@@ -329,14 +329,77 @@ const relatedReading = {
     "title": "天浜線で訪ねる湖西のまち"
   }
 };
+const linkedPhotoGroups = [
+  ["/discover/utsuyama-myoryuji/","妙立寺と宇津山城跡を訪ねる",["myoryuji-1933","commons-d3ebc9079d8d"]],
+  ["/discover/tenhama/","天浜線の駅と、沿線の立ち寄り先",["shinjohara-1989","shinjohara-2017-01","shinjohara-2017-02","shinjohara-th2103-2013","chibata-2013","chibata-platform-2013","chibata-2009","chibata-2006","chibata-platform-2006","chibata-train-2013","omori-2009","omori-train-2013","asumomae-2009-01","asumomae-2009-02","commons-fd33040e01af","commons-a136cf456007","commons-1b9fe359b410","commons-b70a65e911a1","commons-ff49af222837","commons-17b58981e99b","commons-e7d1b3ea853e","commons-5e84973baa81"]],
+  ["/life/start-living/public-transit/","湖西の今の鉄道・バスの使い方",["washizu-2008","washizu-2014-01","washizu-2014-02","washizu-2014-03","washizu-rain-2014","araimachi-2008","araimachi-platform-2008","araimachi-train-2006","commons-724cd24f1c2f","commons-912dc86ff174","commons-ad97bdddd4f3","commons-6fcbdd51c10d","commons-b7945dad8d07","commons-31072815755a","commons-efea3332563f","shizulib-washizu-station-taisho"]],
+  ["/discover/chibata/","知波田と神座の歴史案内",["chibata-platform-2006","chibata-train-2013"]],
+  ["/discover/shirasuka-shuku/","白須賀宿と潮見坂の現地案内",["shirasuka-coast-2015","shizuoka-mizube-shirasuka","commons-15cab21f33ea","commons-536e43e46ebb","commons-3a5a5ce1ad59","commons-e4ea0badcfc3","flickr-40517529550","flickr-40517530430","flickr-2827172546"]],
+  ["/discover/shiomizaka/","道の駅潮見坂の立ち寄り方",["shirasuka-coast-2015"]],
+  ["/discover/kosai-mountains/","湖西連峰の入口・コース選び",["shinjohara-view-2016","commons-ad1d6437323b","commons-4f462f7e4032","commons-811af7c66f1c","commons-4a39aa612075"]],
+  ["/life/play-out/visit-library/","中央図書館の開館・利用方法",["library-2012","library-2017","library-books-2017","commons-fb7cdc0e9827","commons-88ff04a19ab8"]],
+  ["/life/education/study-facilities/","図書館での学習場所と利用ルール",["library-books-2017","commons-fb7cdc0e9827","commons-88ff04a19ab8"]],
+  ["/discover/arai-sekisho/","新居関所・史料館の見学案内",["arai-sekisho-2012","arai-sekisho-2016","arai-sekisho-interior-2016","arai-sekisho-entrance-2016","commons-3162dbcd9bb5","commons-069445586e06","commons-d18a65960d09","ndl-arai-sekisho-1914","shizulib-arai-sekisho-roof-1921","ndl-arai-pines-1911","ndl-arai-sekisho-front-1941","shizulib-arai-sekisho-street"]],
+  ["/discover/kosai-old-photos/","湖西の空中写真と現地の地図を見比べる方法",["kosai-gsi-275664","kosai-gsi-2026061","kosai-gsi-391571","kosai-gsi-770737","kosai-gsi-703684","kosai-gsi-18450","kosai-gsi-278047","kosai-gsi-822508","kosai-gsi-429644","kosai-gsi-703113","kosai-gsi-749114","kosai-gsi-21254","kosai-gsi-279835","kosai-gsi-813328","kosai-gsi-426201","kosai-gsi-771319","kosai-gsi-1636079","kosai-gsi-706563","kosai-gsi-714107","kosai-gsi-257511","kosai-gsi-623165","kosai-gsi-655943","kosai-gsi-657303","kosai-gsi-246325","kosai-gsi-464065","kosai-gsi-244822","kosai-gsi-1636179","kosai-gsi-1636073"]],
+  ["/discover/chibata/","知波田・神座周辺の歴史とまち歩き",["kosai-gsi-9275","kosai-gsi-275663","kosai-gsi-821290","kosai-gsi-390882","kosai-gsi-690083","kosai-gsi-703682","kosai-gsi-273343","kosai-gsi-273341","kosai-gsi-703077","kosai-gsi-757244","kosai-gsi-1635880"]],
+  ["/discover/arai-shuku/","新居のまち歩きと歴史",["kosai-gsi-464056","kosai-gsi-464082","kosai-gsi-464189","kosai-gsi-464125","kosai-gsi-464071","kosai-gsi-464153","kosai-gsi-464142","kosai-gsi-464115","kosai-gsi-464107","kosai-gsi-464067","kosai-gsi-464163","kosai-gsi-464159","commons-ef48cf33394e"]],
+  ["/discover/kosai-old-photos/","新所原・岡崎周辺の写真と地図の調べ方",["kosai-gsi-18449","kosai-gsi-277619","kosai-gsi-813319","kosai-gsi-685616","kosai-gsi-771317","kosai-gsi-749629","kosai-gsi-255181","kosai-gsi-269216","kosai-gsi-244820","kosai-gsi-749632"]],
+  ["/discover/shirasuka-shuku/","白須賀・境宿の地形とまち歩き",["kosai-gsi-20760","kosai-gsi-279324","kosai-gsi-2026326","kosai-gsi-687160","kosai-gsi-96503","kosai-gsi-1636381","kosai-gsi-295573","kosai-gsi-301820","kosai-gsi-687159","kosai-gsi-245925","kosai-gsi-751218","kosai-gsi-752883"]],
+  ["/discover/hamanako-imagire/","浜名湖と今切口の地形・水辺の案内",["commons-9fb57c7cd8f2","commons-206ede37200a","commons-ba1f28661778","commons-93a2cdbdb8e6","commons-4bdc0d95bed2","commons-2fb3020fba61","commons-34469ec2270c","commons-bb5a37d2b028"]],
+  ["/discover/kaikokan/","海湖館・新居弁天の水辺の訪ね方",["commons-9fb57c7cd8f2","commons-206ede37200a","commons-93a2cdbdb8e6","commons-ef48cf33394e","shizulib-matsuyama-visitors"]],
+  ["/discover/honkouji/","本興寺の建物・庭の見どころと拝観案内",["commons-b3e8756d2bf6","commons-882e78e68343","commons-255a5f7c1c2b","commons-57c205e274f4","ndl-honkoji-1914","ndl-honkoji-hall-1941","shizulib-honkoji-garden-people"]],
+  ["/discover/arai-shuku/","旧東海道・新居宿のまち歩き",["commons-1e7ec3d5609a","shizulib-izumicho-street-1913","shizulib-arai-ferry-1913","shizulib-izumicho-daily-1913","shizulib-arai-ferry-point-1913","arai-takaraya-waterfront-glass-plate"]],
+  ["/discover/kinokuniya/","旅籠を残す紀伊国屋資料館の案内",["commons-1e7ec3d5609a","arai-takaraya-waterfront-glass-plate"]],
+  ["/life/play-out/parking-access/","湖西を訪ねる前の交通と駐車場の確認",["commons-34469ec2270c","commons-bb5a37d2b028","commons-f0e916a26c98","commons-edb0333b98db"]],
+  ["/discover/shiomizaka/","道の駅潮見坂へのアクセスと立ち寄り方",["commons-536e43e46ebb","flickr-40517530430","flickr-2827172546","flickr-2888644455","commons-1da2e1c3a627"]],
+  ["/discover/hamana-uchiyama/","浜名・内山・中之郷の地域案内",["kosai-gsi-464121","kosai-gsi-1636384"]],
+  ["/discover/hamanako-imagire/","浜名湖と今切口を歩く",["commons-ef48cf33394e","commons-8dcf80a46256"]],
+  ["/discover/komatsuro/","新居宿・小松楼の建築とまち歩き",["shizulib-izumicho-street-1913","shizulib-izumicho-daily-1913","arai-izumicho-2015"]],
+  ["/discover/kosai-food/","浜名湖の漁業と湖西の食文化",["ndl-hamanako-kakome-fishing-1930","ndl-washizu-pier-1930","commons-8dcf80a46256","arai-fishing-huts-1935"]],
+  ["/life/start-living/city-hall-branches/","現在の市役所・支所と手続き窓口",["cityhall-2008","commons-0362c5382030","commons-43458dc158d4"]],
+  ["/life/play-out/sports-facilities/","アメニティプラザなどのスポーツ施設予約",["commons-1fad50513e8b"]],
+  ["/life/play-out/swimming-pools/","アメニティプラザのプール利用案内",["commons-1fad50513e8b"]],
+  ["/life/health-medical/find-hospitals/","市立湖西病院などの医療機関の確認先",["commons-103548e48356"]],
+  ["/life/play-out/cultural-facilities/","湖西の文化施設の案内",["commons-9ed1fda325ae"]],
+  ["/discover/hamana-uchiyama/","日ヶ崎周辺の浜名・内山・中之郷を訪ねる",["shizuoka-mizube-higasaki"]],
+  ["/life/play-out/find-parks/","湖西の公園を行き先から探す",["shizuoka-mizube-higasaki"]],
+  ["/discover/sakichi-toyoda/","豊田佐吉記念館の見学と発明の歴史",["commons-78d9a0f60c4e","commons-2544e130fd79"]],
+  ["/discover/arai-temples/","新居の寺社と火防の信仰をたどる",["commons-a8a87bae3425","flickr-25678860421"]],
+  ["/discover/kosai-festivals/","新居の手筒花火など湖西の祭りを読む",["flickr-25678860421"]],
+  ["/discover/arai-shuku/","新居宿のまち歩き",["flickr-25678860421"]],
+  ["/discover/arai-shuku/","新居宿の町並みと街道の案内",["commons-c6be73b2839f","shizulib-arai-waterfront-1930","arai-izumicho-2015","shizulib-arai-panorama-taisho","ndl-arai-anzai-site-1941","flickr-19031596254","flickr-19471375780","commons-04728399555e","commons-169ab80d215f"]],
+  ["/discover/nakane-gardens/","新居の庭園・浜名川周辺の見どころ",["commons-04728399555e","flickr-1215265680"]],
+  ["/discover/kosai-old-photos/","鷲津や周辺地区の郷土資料を探す方法",["ndl-miyazaki-workers-1912","ndl-miyazaki-lakeside-1912","ndl-kizu-silk-office-1912","ndl-okazaki-silk-exterior-1912","ndl-okazaki-silk-interior-1912","shizulib-kawai-lakeside","shizulib-kawai-interior","shizulib-washizu-panorama-taisho"]],
+  ["/life/start-living/public-transit/","現在の鉄道・バスの利用案内",["arai-bus-2002","commons-e6d585613781","commons-b9edc6eafb0a"]],
+  ["/discover/hamanako-imagire/","今切口・浜名湖西岸の地形と見どころ",["commons-ec4d74e23189","shizulib-gentayama-view-taisho"]],
+  ["/discover/shirasuka-culture/","白須賀の町に伝わる学問と文化",["ndl-shirasuka-silk-office-1912","ndl-shirasuka-1918","shizulib-shirasuka-road-1930"]],
+  ["/discover/shirasuka-shuku/","白須賀宿と潮見坂のまち歩き",["shizulib-shirasuka-road-1930"]],
+];
+const archiveGuideLinks = new Map();
+for (const [path,label,ids] of linkedPhotoGroups) {
+  for (const id of ids) {
+    if (!archiveGuideLinks.has(id)) archiveGuideLinks.set(id,[]);
+    archiveGuideLinks.get(id).push([path,label]);
+  }
+}
+
 function historyReading(photo) {
- const article=photo&&relatedReading[photo.id];
- const links=article?[['/discover/'+article.slug+'/',article.title]]:[
-  ['/discover/','観光・歴史・まち歩きの案内'],
-  ['/#current-information','休館・受付期限などの最新情報'],
-  ['/','湖西市の手続き・相談先を探す']
- ];
- return `<aside class="library-note history-reading" aria-label="湖西ライフハックへの案内"><h2>${article?'写真の場所を今訪ねる':'湖西ライフハックで今の湖西を調べる'}</h2>${readingList(links)}</aside>`;
+  let heading = '湖西ライフハックで今の湖西を調べる';
+  let links = [
+    ['/discover/','観光・歴史・まち歩きの案内'],
+    ['/#current-information','休館・受付期限などの最新情報'],
+    ['/','湖西市の手続き・相談先を探す']
+  ];
+  if (photo) {
+    heading = '写真の場所・背景を知る';
+    const original = relatedReading[photo.id];
+    links = original ? [['/discover/'+original.slug+'/',original.title]] : [];
+    for (const link of archiveGuideLinks.get(photo.id) || []) {
+      if (!links.some(([path])=>path===link[0])) links.push(link);
+    }
+    if (!links.length) return '';
+  }
+  return `<aside class="library-note history-reading" aria-label="湖西ライフハックへの案内"><h2>${heading}</h2>${readingList(links)}</aside>`;
 }
 
 export function home(all) {
@@ -505,7 +568,7 @@ export function detail(all,p) {
       </section>
     </div>
     ${topic?`<p><a class="more" href="${topic}">${esc(topics[topic].title)}をもっと見る</a></p>`:''}
-    ${relatedReading[p.id]?historyReading(p):''}
+    ${historyReading(p)}
     ${consultation('photo')}
     <p class="photo-maker small-meta">湖西懐かし写真館の作成者　<a href="/creator/">大石浩之について</a></p>
   </article>`,{description:photoDescription(p),image:photoImage(p,true),imageAlt:p.alt||p.title,script:imageMetadata(p)});
