@@ -203,6 +203,27 @@ const topics = {
       ['/discover/hamana-uchiyama/','浜名・内山・中之郷を歩く']
     ],
     filter:['collection','空から見る湖西']
+  },
+  '/features/kosai-silk/': {
+    label:'鷲津と岡崎の製糸・浜名湖れんが館',
+    title:'湖西の製糸場の古写真｜宮崎製糸・岡崎共同揚返場と浜名湖れんが館',
+    lead:'浜名湖れんが館は、旧宮崎製糸鷲津工場で繭を保管していた倉庫です。1912年刊の資料に残る鷲津の製糸場と岡崎の揚返場の写真を、外観と作業場に分けて見比べます。',
+    groups:[
+      ['鷲津の宮崎製糸場：湖畔の工場と作業場','湖西市の文化財資料によると、宮崎製糸鷲津工場が駅の西側にできたのは1904年です。外の写真では瓦屋根の工場と煙突の向こうに湖面が見え、屋内の写真では機械の列に沿って人々が作業しています。',[
+        'ndl-miyazaki-lakeside-1912','ndl-miyazaki-workers-1912']],
+      ['岡崎共同揚返場：田畑に面した建物と機械','同じ資料に掲載された別の施設です。岡崎では田畑に面した建物と、機械を並べた屋内の写真が対になっています。鷲津の工場写真とは別地点です。',[
+        'ndl-okazaki-silk-exterior-1912','ndl-okazaki-silk-interior-1912']]
+    ],
+    context:'鷲津の浜名湖れんが館は工場の作業場そのものではなく、繭倉庫だった建物です。常時開館ではないため、見学を考えている方は湖西市の施設案内をご確認ください。',
+    sources:[
+      ['https://www.city.kosai.shizuoka.jp/material/files/group/22/bunkazai_1.pdf','湖西市の文化財資料「製糸業の発展」'],
+      ['https://www.city.kosai.shizuoka.jp/material/files/group/22/bunkazai_9.pdf','湖西市の関連文化財群「旧宮崎製糸鷲津工場繭倉庫」'],
+      ['https://www.city.kosai.shizuoka.jp/shiseijoho/chosha_shisetsuannai/3283.html','浜名湖れんが館の施設・見学案内（湖西市）'],
+      ['https://dl.ndl.go.jp/pid/1054562/1/15','静岡県蚕糸業沿革史：宮崎製糸場（国立国会図書館）'],
+      ['https://dl.ndl.go.jp/pid/1054562/1/14','静岡県蚕糸業沿革史：岡崎共同揚返場（国立国会図書館）']
+    ],
+    reading:[['/discover/kosai-old-photos/','湖西の古写真や郷土資料を調べる']],
+    filter:['q','蚕糸']
   }
 };
 export const topicPaths=Object.keys(topics);
@@ -227,6 +248,7 @@ export function topicPage(all,path) {
     <h1>${esc(topic.title)}</h1>
     <p class="page-lead">${esc(topic.lead)}</p>
     <p>${dateNote}</p>
+    ${topic.context ? `<p>${esc(topic.context)}</p>` : ''}
     ${groupsWithPhotos.map(([name,description,photos])=>photos.length?section(name,'',`<p>${esc(description)}</p><div class="exhibit-grid">${photos.map(card).join('')}</div>`):'').join('')}
     <aside class="library-note">
       <h2>関連する写真と資料</h2>

@@ -20,6 +20,18 @@ for(const path of topicPaths){
  assert.ok((topic.match(/class="plate" href="\/photos\/[-\w]+\//g)||[]).length>1,path+' missing photos');
  assert.ok(topic.includes('この特集を共有'),path+' missing share control');
 }
+const silkPath='/features/kosai-silk/';
+const silkPage=await fetchPage(silkPath);
+for(const id of ['ndl-miyazaki-lakeside-1912','ndl-miyazaki-workers-1912','ndl-okazaki-silk-exterior-1912','ndl-okazaki-silk-interior-1912']){
+ assert.ok(silkPage.includes(`href="/photos/${id}/"`),id);
+ const photoPage=await fetchPage('/photos/'+id+'/');
+ assert.ok(photoPage.includes('撮影年不詳')&&photoPage.includes('出典・利用条件'),id);
+}
+assert.ok(silkPage.includes('別地点')&&silkPage.includes('常時開館ではない'));
+assert.ok(silkPage.includes('https://www.city.kosai.shizuoka.jp/shiseijoho/chosha_shisetsuannai/3283.html'));
+assert.ok((await fetchPage('/features/washizu/')).includes('href="'+silkPath+'"'));
+assert.ok((await fetchPage('/photos/ndl-okazaki-silk-exterior-1912/')).includes('href="'+silkPath+'"'));
+assert.ok(!(await fetchPage('/features/arai-shuku/')).includes('浜名湖れんが館は工場の作業場'));
 assert.ok(topicSitemap.includes('xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"'));
 assert.equal((topicSitemap.match(/<image:loc>/g)||[]).length,photos.length);
 assert.ok(secondPage.includes(`<link rel="canonical" href="${canonicalOrigin}/photos/?page=2">`));
