@@ -16,7 +16,7 @@ assert.equal(asset.status,200);
 assert.match(asset.headers.get('content-type'),/javascript/);
 assert.equal(await asset.text(),script);
 const trackerCount = html => (html.match(/<script defer src="\/album-tracker.js" data-site="atawi-kosaialb"><\/script>/g) || []).length;
-for (const path of ['/', '/photos/', '/features/kosai-station/', '/library/', '/creator/', '/about/', '/usage/', '/privacy/', '/photos/tokaido-bridge/']) {
+for (const path of ['/', '/photos/', '/features/kosai-station/', '/library/', '/creator/', '/about/', '/usage/', '/privacy/', '/photos/ndl-shirasuka-1918/']) {
   const response = await worker.fetch(new Request(origin + path), {});
   assert.equal(response.status, 200, path);
   const html = await response.text();

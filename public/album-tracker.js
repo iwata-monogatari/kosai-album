@@ -21,6 +21,90 @@
   applyInternalCommand();
   if (shouldIgnoreCurrentPage()) return;
   var internalContext = internalTrackingContext();
+  // BEGIN reading measurement 20261126 (shared tracker visible10-interaction-v1).
+  // Generated from fujigaoka-analytics-worker/public/tracker.js; no query, input or referrer is sent.
+  (function (siteId, internalContext, performance) {
+    if (window.__fujigaokaReadingLoaded || !window.fetch || !performance || typeof performance.now !== 'function') return;
+    var endpointBase = 'https://fujigaoka-analytics-worker.hiroyukio0122.workers.dev';
+    function withInternalContext(value) {
+      if (internalContext.isInternal) {value.is_internal=true;value.internal_reason=internalContext.reason || 'internal';}
+      return value;
+    }
+  // Anonymous per-page identifier: no persistent user identifier or cookie.
+  // Hidden time never contributes. Timers use a monotonic clock, and trusted
+  // input is required (wheel/touch input, not programmatic scroll events).
+  window.__fujigaokaReadingLoaded = true;
+  var readingId = window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() :
+    Date.now().toString(36) + '_' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+  var readingStarted = false, readingStarting = false, readingSent = false, readingSending = false;
+  var readingVisible = 0, readingSince = null, readingInput = '', readingTimer = null;
+  var readingStartAttempts = 0, readingSendAttempts = 0;
+  function readingPayload(phase) {
+    return withInternalContext({site_id:siteId,path:window.location.pathname,url:window.location.origin+window.location.pathname,page_id:readingId,
+      phase:phase,visible_ms:Math.floor(readingVisible),interaction:readingInput});
+  }
+  function readingTick() {
+    var now = performance.now();
+    if (readingSince !== null) readingVisible += Math.max(0,now-readingSince);
+    readingSince = readingStarted && document.visibilityState === 'visible' ? now : null;
+  }
+  function readingPost(payload) {
+    return fetch(endpointBase+'/api/engagement',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload),mode:'cors',credentials:'omit',keepalive:true}).then(function(response) {
+      if (!response.ok) throw new Error('reading_http_'+response.status);
+      return response.json();
+    });
+  }
+  function startReading() {
+    if (!window.fetch || readingStarted || readingStarting || readingStartAttempts >= 3 || document.visibilityState !== 'visible') return;
+    readingStarting = true; readingStartAttempts++;
+    readingPost(readingPayload('start')).then(function(result) {
+      if (result.ignored) { readingSent = true; return; }
+      readingStarted = true;
+      readingSince = document.visibilityState === 'visible' ? performance.now() : null;
+      scheduleReading();
+    }).catch(function() { setTimeout(startReading,3000); }).finally(function() {readingStarting=false;});
+  }
+  function scheduleReading() {
+    clearTimeout(readingTimer);
+    if (readingSent || !readingStarted || document.visibilityState !== 'visible') return;
+    readingTick();
+    if (readingVisible >= 10000 && readingInput) { finishReading(false); return; }
+    if (readingVisible < 10000) readingTimer = setTimeout(scheduleReading,Math.max(50,10050-readingVisible));
+  }
+  function finishReading(leaving) {
+    readingTick();
+    if (!readingStarted || readingSent || readingSending || readingVisible < 10000 || !readingInput) return;
+    var payload = readingPayload('engaged');
+    if (leaving && navigator.sendBeacon) {
+      // Same id makes a beacon and an in-flight retry idempotent on the server.
+      navigator.sendBeacon(endpointBase+'/api/engagement',new Blob([JSON.stringify(payload)],{type:'application/json'}));
+      return;
+    }
+    if (readingSendAttempts >= 3) return;
+    readingSending = true; readingSendAttempts++;
+    readingPost(payload).then(function() {readingSent=true;clearTimeout(readingTimer);})
+      .catch(function() {setTimeout(function(){finishReading(false);},3000);})
+      .finally(function(){readingSending=false;});
+  }
+  [['wheel','scroll'],['touchmove','touchmove'],['click','click'],['keydown','keydown']].forEach(function(pair) {
+    document.addEventListener(pair[0],function(event) {
+      if (event.isTrusted !== true || document.visibilityState !== 'visible' || readingSent) return;
+      readingInput = pair[1]; scheduleReading();
+    },{capture:true,passive:true});
+  });
+  document.addEventListener('visibilitychange',function() {
+    readingTick(); clearTimeout(readingTimer);
+    if (document.visibilityState === 'visible') {startReading();scheduleReading();}
+    else finishReading(true);
+  });
+  window.addEventListener('pagehide',function(){readingTick();readingSince=null;clearTimeout(readingTimer);finishReading(true);readingSince=null;});
+  window.addEventListener('pageshow',function(){readingTick();startReading();scheduleReading();});
+  startReading();
+
+  })('atawi-kosaialb',internalContext,window.performance);
+  // END reading measurement 20261126
+
 
   // The album normally sends no Referer. These public links send only its origin.
   // The fragment stays in the browser; only a validated public path can enter a PV.
