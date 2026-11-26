@@ -146,6 +146,13 @@ const topics = {
   '/features/arai-shuku/': {
     label:'新居宿・新居関所',
     title:'新居宿・新居関所の古写真',
+    notice:{
+      id:'arai-photo-exhibition-2026',
+      title:'新居関所史料館「写真でみる新居の近現代」',
+      body:'2026年11月28日（土）〜12月25日（金）、9:00〜16:30（月曜休館）。新居関所史料館の開館50周年企画展で、図録などに残る明治から平成の新居を紹介します。会場の展示写真と、このページで見られる写真は別の案内です。',
+      url:'https://www.city.kosai.shizuoka.jp/kosodate_kyoiku/bunka_shogaigakushu/3614.html',
+      link:'湖西市公式で会期・入館案内を確認する'
+    },
     lead:'新居関所の瓦屋根と松、渡船場の水辺、舟の前に建つ旅館・宝屋。湖西市の旧新居町に残る写真資料から、東海道の宿場をたどります。',
     groups:[
       ['新居関所の建物と庭','『静岡県浜名郡誌』と県の史跡資料を見比べると、塀越しの屋根や、庭に面した縁側の様子が分かります。',
@@ -250,6 +257,7 @@ export function topicPage(all,path) {
     <p class="page-lead">${esc(topic.lead)}</p>
     <p>${dateNote}</p>
     ${topic.context ? `<p>${esc(topic.context)}</p>` : ''}
+    ${topic.notice ? `<aside class="library-note" id="${esc(topic.notice.id)}"><h2>${esc(topic.notice.title)}</h2><p>${esc(topic.notice.body)}</p><p><a href="${esc(topic.notice.url)}">${esc(topic.notice.link)}</a></p></aside>` : ''}
     ${groupsWithPhotos.map(([name,description,photos])=>photos.length?section(name,'',`<p>${esc(description)}</p><div class="exhibit-grid">${photos.map(card).join('')}</div>`):'').join('')}
     <aside class="library-note">
       <h2>関連する写真と資料</h2>
