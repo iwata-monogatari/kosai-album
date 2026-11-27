@@ -6,7 +6,7 @@ export function albumHeader({site, mark, area, theme, links, consult, path}) {
     <div class="album-masthead">
       <a class="album-brand" href="/" aria-label="${escape(site)} ホーム">
         <span class="album-seal" aria-hidden="true">${escape(mark)}</span>
-        <span class="album-wordmark"><span class="album-region">${escape(area)}の記憶を、一枚ずつ。</span><span class="album-name">${escape(site)}</span></span>
+        <span class="album-wordmark"><span class="album-region">${escape(area)}の昔の写真</span><span class="album-name">${escape(site)}</span></span>
       </a>
       <nav class="album-actions" aria-label="作成者・寄稿・相談">
         ${link('/creator/', '作成者・大石浩之', 'album-creator')}

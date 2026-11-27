@@ -12,6 +12,7 @@ const html=(s,status=200)=>new Response(s,{status,headers:{'content-type':'text/
 const absent=(status=404)=>html(layout('写真を表示できません','/photos/','<div class="wrap section"><h1>このページは表示できません</h1><a href="/photos/">写真一覧へ戻る</a></div>',{private:true}),status);
 async function serve(req,env){
  const u=new URL(req.url),path=u.pathname;
+ if(path==='/photo-front.css')return env.ASSETS.fetch(req);
  if(![env.PUBLIC_HOST||'kosaialb.atawi.link','localhost','127.0.0.1'].includes(u.hostname)){
  if(/^\/(?:review|admin|api|media|okuru|contact)(?:\/|$)/.test(path)||!['GET','HEAD'].includes(req.method))return absent();return Response.redirect(origin+path,302)}
  if(!['GET','HEAD'].includes(req.method)&&req.headers.get('origin')!==u.origin)return json({error:'送信元を確認できません。'},403);
