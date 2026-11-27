@@ -1,3 +1,4 @@
+import {photoAlbum} from './photo-navigation.js';
 import {createFeatureGallery} from './feature-gallery.js';
 import {photoFront, photoBanners} from './photo-front.js';
 import { renderAlbumFooter } from './album-footer.js';
@@ -526,10 +527,9 @@ export function listing(all,url) {
   </div>`);
 }
 
-function photoNavigation(siblings,index,p) {
-  const jump = (photo,direction,label) => photo?`<a class="photo-jump photo-jump-${direction}" href="${href(photo)}" rel="${direction}"><span>${label}</span><strong>${esc(photo.title)}</strong></a>`:'';
-  const next=index>=0?siblings[index+1]:null;
-  const previous=index>0?siblings[index-1]:null;
+function photoNavigation(album,p) {
+  const {photos: siblings, index, previous, next} = album;
+  const jump = (photo,direction,label) => photo?`<a class="photo-jump photo-jump-${direction}" href="${href(photo)}" rel="${direction}"><span>${label}</span><strong>${esc(album.label(photo))}</strong></a>`:'';
   return `<nav class="next-photo" aria-label="同じアルバムの写真">
     <div class="photo-nav-head">
       <p>${esc(p.collection||'市民寄稿')}${index>=0?`<span>${index+1} / ${siblings.length}点</span>`:''}</p>
@@ -539,7 +539,7 @@ function photoNavigation(siblings,index,p) {
   </nav>`;
 }
 export function detail(all,p) {
-  const siblings=all.filter(x=>x.collection===p.collection),i=siblings.findIndex(x=>x.id===p.id);
+  const album = photoAlbum(all, p);
   const strongest=media(p,p.sizes.at(-1));
   const topic=topicForPhoto(p);
   return layout(p.title,href(p),`<article class="wrap page-inner single">
@@ -548,7 +548,7 @@ export function detail(all,p) {
     <div class="photo-title-meta"><p class="small-meta">${esc(p.dateLabel)}　／　${esc(p.place)}</p><a class="more" href="#source">出典・利用条件へ</a></div>
     <figure class="single-plate"><a href="${strongest}" aria-label="${esc(p.title)}を原寸で開く">${img(p,true,true)}</a><figcaption><span>${esc(p.credit)}</span><a href="${strongest}">画像を大きく見る</a></figcaption></figure>
     ${sharePanel(href(p),p.title,'この写真を共有')}
-    ${photoNavigation(siblings,i,p)}
+    ${photoNavigation(album,p)}
     <div class="photo-record">
       <div class="photo-story"><h2>この写真について</h2><p>${esc(p.caption)}</p>${p.memory?'<p>'+esc(p.memory)+'</p>':''}<p><a href="/contact/?photo=${encodeURIComponent(p.id)}">この写真について伝える</a></p></div>
       <section class="photo-source" aria-labelledby="photo-source-heading">

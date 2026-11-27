@@ -24,7 +24,7 @@ const subjects = [
   ['people', /人々|作業|仕事|集合|職人|茶揉み|茶摘み|働く/],
 ];
 
-function describe(photo) {
+export function describe(photo) {
   const title = photo.title || '';
   const aerial = /空中写真|航空写真|^aerial$/i.test(`${photo.type || ''} ${photo.collection || ''}`.trim());
   const primary = aerial ? 'aerial' : subjects.find(([, match]) => match.test(title))?.[0];
@@ -36,7 +36,7 @@ function describe(photo) {
   return { photo, place, kind, theme, tone };
 }
 
-function likeness(a, b) {
+export function likeness(a, b) {
   const samePlace = a.place.length >= 2 && a.place === b.place;
   const sameSubject = a.kind && a.kind === b.kind;
   return (samePlace ? 6 : 0) + (sameSubject ? 6 : 0)
