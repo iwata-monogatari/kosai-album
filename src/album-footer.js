@@ -30,7 +30,7 @@ function footerHttps(value) {
 }
 
 // A booked placement uses { advertiser, title, url, image? }; the image URL must use HTTPS.
-function albumPromoFooter(city, placement = null, showAuthor = true) {
+function albumPromoFooter(city, placement = null, showAuthor = true, showHome = true, pagePath = "/") {
   const site = albumCities[city] + '懐かし写真館';
   const source = city + 'alb.atawi.link';
   function destination(url, slot) {
@@ -39,10 +39,14 @@ function albumPromoFooter(city, placement = null, showAuthor = true) {
     link.searchParams.set('utm_medium', 'referral');
     link.searchParams.set('utm_campaign', 'album_footer');
     link.searchParams.set('utm_content', slot);
+    if(slot==='home' && /^\/photos\/[\w-]+\/$/.test(pagePath)){
+      link.searchParams.set('utm_campaign','jikka_karte');
+      link.searchParams.set('utm_content',city==='hamamatsu'?'photo-'+pagePath.split('/')[2]+'-request':'photo_apply');
+    }
     return footerEscape(link.href);
   }
   function banner(kind, url, label, title, action, portrait = '') {
-    return `<a class="ap-card ap-${kind}" href="${destination(url, kind)}"><span class="ap-label">${label}</span><span class="ap-title">${title}</span><span class="ap-cta">${action}</span>${portrait}</a>`;
+    return `<a class="ap-card ap-${kind}"${kind==='home'?' id="jikka-karte" referrerpolicy="origin"':''} href="${destination(url, kind)}"><span class="ap-label">${label}</span><span class="ap-title">${title}</span><span class="ap-cta">${action}</span>${portrait}</a>`;
   }
   const portrait = (city === 'morimachi' ? '/images/' : '/') + 'oishi-portrait.jpg?v=2f69e9a64c27';
   const advertiserUrl = placement && footerHttps(placement.url);
@@ -52,16 +56,16 @@ function albumPromoFooter(city, placement = null, showAuthor = true) {
     paid = `<a class="ap-card ap-ad" href="${footerEscape(advertiserUrl)}" rel="sponsored"><span class="ap-label">広告 ｜ ${footerEscape(placement.advertiser)}</span>${image ? '<img loading="lazy" alt="" src="' + footerEscape(image) + '">' : ''}<span class="ap-title">${footerEscape(placement.title)}</span><span class="ap-cta">広告主のサイトを見る</span></a>`;
   }
   return footerStyle + `<section class="album-promos" aria-label="住まいの相談・運営者のご案内・広告"><div class="ap-grid">
-    ${banner('home','https://fudosan.atawi.link/karte/','不動産相談 ｜ 富士ヶ丘サービス','実家を売るか、残すか','ふじがおか実家カルテを見る')}
+    ${showHome ? banner('home','https://fudosan.atawi.link/#apply','富士ヶ丘サービス','実家・空き家の相談','無料の実家カルテを依頼する') : ''}
     ${banner('firm','https://www.fujigaoka-service.co.jp/','運営会社 PR ｜ 介護と不動産','富士ヶ丘サービス株式会社','会社の公式サイトを見る')}
-    ${showAuthor ? banner('author','https://oishi-hiroyuki.org/profile','写真館の作成者','大石浩之','プロフィールを読む','<img class="ap-portrait" src="'+portrait+'" width="54" height="71" loading="lazy" alt="">') : ''}
+    ${showAuthor ? `<a class="pf-maker" href="/creator/"><img src="${portrait}" width="90" height="120" alt="" loading="lazy"><div><h2>大石浩之</h2><p>作成者について</p></div></a>` : ''}
     ${paid}
   </div><details class="ap-enquiry"><summary>${site}へのバナー広告掲載（有料）</summary>
   <p>この写真館のページ下部に、お店やサービスのバナーを掲載できます。ご希望の写真館名・掲載期間・リンク先をお知らせください。富士ヶ丘サービスが空き状況と料金をご案内します。</p>
   <p>ご用件には「${site}・バナー広告」とご記入ください。</p>
-  <a href="${destination('https://oishi-hiroyuki.org/contact','ad_inquiry')}">広告掲載をフォームで相談する</a> <a href="tel:0538313308">電話で相談する（0538-31-3308）</a></details></section>`;
+  <a href="${destination('https://oishi-hiroyuki.org/contact','ad_inquiry')}">広告掲載をフォームで相談する</a> <a href="tel:0538313308">電話で相談する（0538-31-3308）</a></details><nav class="ap-resources" aria-label="資料と地域情報"><a href="/library/">写真の出典・資料</a><a href="https://kosai.enshu-lifehack.com/">湖西の暮らし・お出かけ</a></nav></section>`;
 }
 
 // Set this gallery's paid booking here after agreeing the placement with the advertiser.
 const paidPlacement = null;
-export const renderAlbumFooter = ({showAuthor = true} = {}) => albumPromoFooter('kosai', paidPlacement, showAuthor);
+export const renderAlbumFooter = ({showAuthor = true, showHome = true, pagePath = "/"} = {}) => albumPromoFooter('kosai', paidPlacement, showAuthor, showHome, pagePath);
