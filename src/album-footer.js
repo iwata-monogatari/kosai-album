@@ -30,7 +30,7 @@ function footerHttps(value) {
 }
 
 // A booked placement uses { advertiser, title, url, image? }; the image URL must use HTTPS.
-function albumPromoFooter(city, placement = null) {
+function albumPromoFooter(city, placement = null, showAuthor = true) {
   const site = albumCities[city] + '懐かし写真館';
   const source = city + 'alb.atawi.link';
   function destination(url, slot) {
@@ -54,7 +54,7 @@ function albumPromoFooter(city, placement = null) {
   return footerStyle + `<section class="album-promos" aria-label="住まいの相談・運営者のご案内・広告"><div class="ap-grid">
     ${banner('home','https://fudosan.atawi.link/karte/','不動産相談 ｜ 富士ヶ丘サービス','実家を売るか、残すか','ふじがおか実家カルテを見る')}
     ${banner('firm','https://www.fujigaoka-service.co.jp/','運営会社 PR ｜ 介護と不動産','富士ヶ丘サービス株式会社','会社の公式サイトを見る')}
-    ${banner('author','https://oishi-hiroyuki.org/profile','写真館の作成者','大石浩之','プロフィールを読む','<img class="ap-portrait" src="'+portrait+'" width="54" height="71" loading="lazy" alt="">')}
+    ${showAuthor ? banner('author','https://oishi-hiroyuki.org/profile','写真館の作成者','大石浩之','プロフィールを読む','<img class="ap-portrait" src="'+portrait+'" width="54" height="71" loading="lazy" alt="">') : ''}
     ${paid}
   </div><details class="ap-enquiry"><summary>${site}へのバナー広告掲載（有料）</summary>
   <p>この写真館のページ下部に、お店やサービスのバナーを掲載できます。ご希望の写真館名・掲載期間・リンク先をお知らせください。富士ヶ丘サービスが空き状況と料金をご案内します。</p>
@@ -64,4 +64,4 @@ function albumPromoFooter(city, placement = null) {
 
 // Set this gallery's paid booking here after agreeing the placement with the advertiser.
 const paidPlacement = null;
-export const renderAlbumFooter = () => albumPromoFooter('kosai', paidPlacement);
+export const renderAlbumFooter = ({showAuthor = true} = {}) => albumPromoFooter('kosai', paidPlacement, showAuthor);
