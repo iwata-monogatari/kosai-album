@@ -1,3 +1,4 @@
+import { arrangedListing } from './photo-list.js';
 import {photoAlbum} from './photo-navigation.js';
 import {createFeatureGallery} from './feature-gallery.js';
 import {photoFront, photoBanners} from './photo-front.js';
@@ -501,7 +502,8 @@ export function listing(all,url) {
   const color=params.get('series')==='color';
   const title=color?colorTitle:(params.get('added')||params.get('batch'))?'新たに収蔵した写真':'写真を探す';
   const rows=color?all.filter(p=>p.colorPeriod):all;
-  const set=rows.filter(p=>(!params.get('added')||p.addedOn===params.get('added'))&&(!params.get('batch')||p.addedBatch===params.get('batch'))&&match(p,fields,params,[p.title,p.place,p.caption,p.dateLabel,p.era,p.theme,p.credit,p.collection,p.id].join(' ')));
+  const set=arrangedListing(all,params,['q','series','added','batch',...fields.map(([field])=>field)],()=>
+    rows.filter(p=>(!params.get('added')||p.addedOn===params.get('added'))&&(!params.get('batch')||p.addedBatch===params.get('batch'))&&match(p,fields,params,[p.title,p.place,p.caption,p.dateLabel,p.era,p.theme,p.credit,p.collection,p.id].join(' '))));
   const size=24, pages=Math.max(1,Math.ceil(set.length/size));
   const page=Math.min(pages,Math.max(1,Math.floor(Number(params.get('page')))||1));
   const start=(page-1)*size;
