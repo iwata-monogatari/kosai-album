@@ -16,3 +16,57 @@
 
 /* One creator card in the footer; no repeated body promotion. */
 .album-promos .pf-maker{color:#243d33;text-decoration:none;border:1px solid #d2d8d3;min-width:0;gap:18px;padding:20px;border-radius:.45rem}.album-promos .pf-maker img{width:90px;height:120px;flex-shrink:0}.album-promos .pf-maker h2{font:700 1.5rem/1.4 "Yu Gothic",Meiryo,sans-serif;margin:0 0 12px;padding:0;border:0;background:none;color:#243d33}.album-promos .pf-maker h2:before,.album-promos .pf-maker h2:after{display:none}.album-promos .pf-maker p{margin:0;font-size:1rem}.album-promos .ap-resources{display:flex;flex-wrap:wrap;gap:12px 24px;margin:22px 0 0}.album-promos .ap-resources a{color:#243d33;font-size:1rem;text-decoration:underline}.album-promos .pf-maker:focus-visible{outline:3px solid #bf6024;outline-offset:4px}
+
+/* Homepage: let images lead; keep detail and source links one tap away. */
+.pf-home .pf-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.pf-home .pf-hero{display:block;background:#172321}
+.pf-home .pf-hero-link{display:block;position:relative;color:white}
+.pf-home .pf-hero img{width:100%;height:auto;max-height:580px;object-fit:contain}
+.pf-home .pf-hero h1{position:absolute;inset:auto 0 0;padding:40px 24px 20px;background:linear-gradient(transparent,rgba(0,0,0,.85));font-size:clamp(1.25rem,2.5vw,2rem);line-height:1.4;color:#fff;text-shadow:0 1px 3px #000}
+.pf-home .pf-search{display:block;padding:18px 0;margin:0 0 10px;border:0}
+.pf-home .pf-search>div{display:flex}
+.pf-home .pf-heading{margin-bottom:14px}
+.pf-home .pf-heading h2{font-size:1.125rem}
+.pf-home .pf-heading>a{font-size:.875rem;text-decoration:underline;padding:8px 0}
+.pf-home .pf-banners{gap:18px}
+.pf-home .pf-banner{border:0;background:transparent}
+.pf-home .pf-banner>a{position:relative;overflow:hidden}
+.pf-home .pf-banner-image{height:auto;aspect-ratio:1.6}
+.pf-home .pf-banner-title{position:absolute;inset:auto 0 0;padding:42px 18px 16px;background:linear-gradient(transparent,rgba(0,0,0,.88));text-shadow:0 1px 3px #000}
+.pf-home .pf-banner-title>span{font-size:1.25rem;line-height:1.45;color:#fff}
+.pf-home .pf-more{margin:20px 0 0}
+.pf-home .pf-more>summary{font-size:.9375rem;padding:14px 0}
+.pf-sources ul{padding:0;list-style:none;margin:0 0 20px}
+.pf-sources li{display:flex;flex-wrap:wrap;gap:4px 16px;padding:10px 0;border-top:1px solid #d2d8d3;font-size:.875rem}
+.pf-sources li a{text-decoration:underline}.pf-sources li span{color:#526159}
+.pf-home .pf-bottom{margin:24px 0 0}
+.pf-home .pf-invite{padding:20px 24px}
+.pf-home .pf-invite h2{font-size:1.25rem;margin:0}
+.album-header.album-home .album-region{display:none}
+.album-header.album-home .album-masthead{position:relative;gap:12px;padding:12px 0}
+.album-header.album-home .album-brand{padding-right:80px;gap:10px}
+.album-header.album-home .album-seal{width:34px;height:38px;font-size:24px}
+.album-header.album-home .album-name{font-size:1.25rem;letter-spacing:0}
+.album-header.album-home .album-actions{gap:8px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.album-header.album-home .album-actions a{grid-column:auto;min-height:44px;padding:8px 4px;font-size:.875rem;white-space:nowrap;border-radius:3px}
+.album-header.album-home .album-menu{position:absolute;right:4%;top:13px;font-size:.875rem}
+.album-header.album-home .album-menu summary{padding:10px 0;cursor:pointer}
+.album-header.album-home .album-menu[open]{background:var(--album-ink);color:var(--album-paper);padding:0 14px 12px;box-shadow:0 4px 12px #0004}
+.album-header.album-home .album-menu .album-browse{display:flex;flex-direction:column;align-items:stretch;width:auto;gap:0}
+.album-promos-home .ap-card{min-height:6rem;justify-content:center;gap:8px}
+.album-promos-home .pf-maker{padding:16px;gap:16px}.album-promos-home .pf-maker img{width:64px;height:86px}.album-promos-home .pf-maker h2{font-size:1.25rem;margin-bottom:6px}
+@media(min-width:1121px){.album-header.album-home .album-masthead{padding-right:110px}.album-header.album-home .album-brand{padding-right:0}.album-header.album-home .album-menu{top:14px}}
+@media(max-width:760px){
+ .pf-home{padding:12px 12px 24px}
+ .pf-home .pf-hero h1{padding:34px 16px 14px;font-size:1.25rem}
+ .pf-home .pf-hero img{max-height:420px}
+ .pf-home .pf-banners{gap:14px}
+ .pf-home .pf-banner-image{aspect-ratio:1.45}
+ .pf-home .pf-banner-title{padding:40px 16px 14px}
+ .pf-home .pf-banner-title>span{font-size:1.125rem}
+ .album-header.album-home .album-masthead{width:calc(100% - 24px)}
+ .album-header.album-home .album-brand{padding-right:70px}
+ .album-header.album-home .album-name{font-size:1.125rem}
+ .album-header.album-home .album-actions{flex-basis:100%}
+ .album-promos-home{padding-top:12px;padding-bottom:12px}
+}
