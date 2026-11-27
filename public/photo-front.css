@@ -53,7 +53,7 @@
 .album-header.album-home .album-menu summary{padding:10px 0;cursor:pointer}
 .album-header.album-home .album-menu[open]{background:var(--album-ink);color:var(--album-paper);padding:0 14px 12px;box-shadow:0 4px 12px #0004}
 .album-header.album-home .album-menu .album-browse{display:flex;flex-direction:column;align-items:stretch;width:auto;gap:0}
-.album-promos-home .ap-card{min-height:6rem;justify-content:center;gap:8px}
+.album-promos.album-promos-home .ap-card{min-height:6rem;justify-content:center;gap:8px}
 .album-promos-home .pf-maker{padding:16px;gap:16px}.album-promos-home .pf-maker img{width:64px;height:86px}.album-promos-home .pf-maker h2{font-size:1.25rem;margin-bottom:6px}
 @media(min-width:1121px){.album-header.album-home .album-masthead{padding-right:110px}.album-header.album-home .album-brand{padding-right:0}.album-header.album-home .album-menu{top:14px}}
 @media(max-width:760px){
