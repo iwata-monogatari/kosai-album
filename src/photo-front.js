@@ -10,6 +10,10 @@ export function photoBanners(items, image, compact = false) {
 }
 
 export function photoFront({city, area, hero, all, items, image, library='/library/', portrait='/oishi-portrait.jpg', extra=''}) {
+  // Home covers are chosen independently of feature-page covers.
+  const covers = {"/features/kosai-station/": "washizu-2008", "/features/shinjohara/": "commons-17b58981e99b"};
+  const byId = new Map(all.map(photo => [photo.id, photo]));
+  items = items.map(item => ({...item, photo: byId.get(covers[item.path]) || item.photo}));
   const collections = [...new Set(all.map(p => p.collection).filter(Boolean))];
   return `<div class="pf-home" data-photo-front="20261127" data-city="${e(city)}">
     <section class="pf-hero">

@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node scripts/check-workflow.mjs && node scripts/check-catalog.mjs",
+    "test": "node scripts/check-workflow.mjs && node scripts/check-catalog.mjs && node scripts/check-home-covers.mjs",
     "deploy": "wrangler deploy",
     "operator": "node ops/operator.mjs",
     "dev": "wrangler dev --ip 127.0.0.1 --port 8793"
