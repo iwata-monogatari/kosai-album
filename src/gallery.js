@@ -1,3 +1,4 @@
+import {createFeatureGallery} from './feature-gallery.js';
 import {photoFront, photoBanners} from './photo-front.js';
 import { renderAlbumFooter } from './album-footer.js';
 import {albumHeader} from './album-header.js';
@@ -245,6 +246,7 @@ function topicForPhoto(photo) {
   return topicPaths.find(path=>topics[path].groups.some(([, , ids])=>ids.includes(photo.id)));
 }
 export function topicPage(all,path) {
+  const gallery = createGallery();
   const topic=topics[path];
   const byId=new Map(all.map(photo=>[photo.id,photo]));
   const groupsWithPhotos=topic.groups.map(([name,description,ids])=>[name,description,ids.map(id=>byId.get(id)).filter(Boolean)]);
@@ -259,7 +261,7 @@ export function topicPage(all,path) {
     <p>${dateNote}</p>
     ${topic.context ? `<p>${esc(topic.context)}</p>` : ''}
     ${topic.notice ? `<aside class="library-note" id="${esc(topic.notice.id)}"><h2>${esc(topic.notice.title)}</h2><p>${esc(topic.notice.body)}</p><p><a href="${esc(topic.notice.url)}">${esc(topic.notice.link)}</a></p></aside>` : ''}
-    ${groupsWithPhotos.map(([name,description,photos])=>photos.length?section(name,'',`<p>${esc(description)}</p><div class="exhibit-grid">${photos.map(card).join('')}</div>`):'').join('')}
+    ${groupsWithPhotos.map(([name,description,photos])=>photos.length?section(name,'',`<p>${esc(description)}</p>${gallery(photos, {chronological: path === '/features/aerial/' || /見比べ|比較|撮影順|年代順|撮影年順/.test(name)})}`):'').join('')}
     <aside class="library-note">
       <h2>関連する写真と資料</h2>
       <p><a href="${esc(searchHref(...topic.filter))}">${esc(topic.label)}の写真を一覧から探す</a></p>
@@ -561,10 +563,11 @@ export function detail(all,p) {
   </article>`,{description:photoDescription(p),image:photoImage(p,true),imageAlt:p.alt||p.title,script:imageMetadata(p)});
 }
 export function feature(all) {
+  const gallery = createGallery();
  const stations=['新所原','鷲津','新居町','知波田','大森','アスモ前'];
  const cover=all.find(photo=>photo.id==='shinjohara-1989');
  const stationDescription='平成元年の新所原駅旧駅舎、2008年の鷲津駅・新居町駅、天竜浜名湖鉄道の知波田・大森・アスモ前。湖西市の駅舎と駅前を、撮影年と出典が分かる写真でたどります。';
- return layout('新所原・鷲津・新居町など湖西の昔の駅写真',stationPath,`<div class="wrap page-inner">${pathNav('駅前のアルバム')}<span class="red-tag">湖西の駅の写真</span><h1>湖西の駅前アルバム｜新所原・鷲津・新居町</h1><p class="page-lead">平成元年の新所原駅旧駅舎から、鷲津・新居町の駅前、天竜浜名湖鉄道の小さな駅まで。駅名と撮影年ごとに写真を掲載しています。</p>${stations.map(name=>{const rows=all.filter(p=>p.collection==='駅と鉄道の記憶'&&(p.title+p.place).includes(name)).sort((a,b)=>a.year-b.year);return rows.length?section(name+'駅の記録','',`<div class="exhibit-grid">${rows.map(card).join('')}</div>`):''}).join('')}<section class="contribute-note"><h2>あなたのアルバムに、昔の駅前はありませんか。</h2><p>通勤の列車、待ち合わせた店、建て替わる前の駅舎。一枚から、覚えていることと一緒にお寄せください。</p><a class="ink-button" href="/okuru/">写真を寄稿・相談する</a></section><aside class="library-note"><h2>今の鉄道・バスで湖西を訪ねる</h2>${readingList([
+ return layout('新所原・鷲津・新居町など湖西の昔の駅写真',stationPath,`<div class="wrap page-inner">${pathNav('駅前のアルバム')}<span class="red-tag">湖西の駅の写真</span><h1>湖西の駅前アルバム｜新所原・鷲津・新居町</h1><p class="page-lead">平成元年の新所原駅旧駅舎から、鷲津・新居町の駅前、天竜浜名湖鉄道の小さな駅まで。駅名と撮影年ごとに写真を掲載しています。</p>${stations.map(name=>{const rows=all.filter(p=>p.collection==='駅と鉄道の記憶'&&(p.title+p.place).includes(name)&&(name!=='新所原'||!p.id.startsWith('asumomae-'))).sort((a,b)=>a.year-b.year);return rows.length?section(name+'駅の記録','',gallery(rows, {chronological: true})):''}).join('')}<section class="contribute-note"><h2>あなたのアルバムに、昔の駅前はありませんか。</h2><p>通勤の列車、待ち合わせた店、建て替わる前の駅舎。一枚から、覚えていることと一緒にお寄せください。</p><a class="ink-button" href="/okuru/">写真を寄稿・相談する</a></section><aside class="library-note"><h2>今の鉄道・バスで湖西を訪ねる</h2>${readingList([
   ['/discover/tenhama/','天浜線で訪ねる湖西のまち'],
   ['/life/start-living/public-transit/','湖西市のバス・鉄道・交通案内']
  ])}</aside>${sharePanel(stationPath,'湖西の駅前アルバム','この特集を共有')}</div>`,{description:stationDescription,image:cover&&photoImage(cover,true),imageAlt:cover&&(cover.alt||cover.title)});
@@ -576,3 +579,5 @@ export function library() {
 export function consultPage() {
  return layout('湖西の実家・空き家の相談','/consult/',`<article class="wrap page-inner">${pathNav('実家・空き家の相談')}<h1>湖西の実家・空き家の相談</h1><p class="page-lead">富士ヶ丘サービスが、実家の売却・保有についての相談を受け付けています。</p><div class="exhibit-grid"><section><h2>売るか、残すか迷っている</h2><p>価格の目安と、家を持ち続ける場合の確認点を知り、家族で話す材料に。</p></section><section><h2>相続した家が空いている</h2><p>名義や手元の資料、建物の状態など、確認する順番を整理します。</p></section><section><h2>遠方から実家が気になる</h2><p>物件が湖西市内なら、ご家族が市外・県外に住んでいても依頼できます。</p></section></div>${consultation('consult')}<h2>申込みの前に</h2><p>実家カルテは富士ヶ丘サービス株式会社のサービスです。湖西市内の物件の市町村・町名・番地（地番）と返信先をご用意ください。写真寄稿のフォームへ不動産の住所や相談内容を入力する必要はありません。</p><p>カルテ作成や必要な確認は無料です。仲介手数料や、外部事業者へ依頼する登記・測量・解体などの費用については、<a href="https://fudosan.atawi.link/#contact-flow">不動産サイトで条件をご確認ください</a>。</p><p><a href="/okuru/">写真について寄稿・相談する</a></p></article>`);
 }
+
+const createGallery = () => createFeatureGallery(photos => `<div class="exhibit-grid">${photos.map(card).join('')}</div>`);
