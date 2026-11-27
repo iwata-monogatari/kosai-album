@@ -10,7 +10,7 @@
 .pf-home a:focus-visible,.pf-banners a:focus-visible,.pf-home summary:focus-visible,.pf-home input:focus-visible,.pf-home button:focus-visible{outline:3px solid #bf6024;outline-offset:4px}.pf-invite:hover,.pf-maker:hover{filter:brightness(.96)}
 /* Keep established regional colors; reduce the masthead's visual weight. */
 .album-header .album-masthead{padding-top:18px;padding-bottom:18px;gap:20px}.album-header .album-region{font-size:.875rem;letter-spacing:0}.album-header .album-actions a{font-size:.9375rem;min-height:48px;padding:10px 12px;box-shadow:none;border-bottom-width:2px}.album-header .album-action-arrow{display:none}.album-header .album-browse a{font-size:.9375rem}.album-header .album-seal{box-shadow:none}.album-header .album-name{font-size:clamp(1.25rem,2vw,1.65rem)}
-@media(min-width:1000px){.pf-banners .pf-banner:nth-child(n+5) .pf-banner-image{height:210px}}
+
 @media(max-width:760px){.pf-home{padding:18px 16px 32px}.pf-hero{grid-template-columns:1fr}.pf-hero img{height:auto;max-height:440px;object-fit:contain}.pf-hero-note{padding:22px;gap:14px}.pf-home .pf-hero h1{font-size:1.65rem}.pf-eyebrow{font-size:.875rem}.pf-search{grid-template-columns:1fr auto;gap:12px;padding:20px 0;margin-bottom:28px}.pf-search>div{grid-column:1/-1;grid-row:2}.pf-search>a{font-size:.875rem}.pf-banners{gap:20px;grid-template-columns:1fr}.pf-banner-image{height:auto;aspect-ratio:1.8}.pf-banner-title{padding:15px 17px}.pf-heading>span{display:none}.pf-bottom{grid-template-columns:1fr}.pf-maker{padding:22px}.pf-maker img{width:100px;height:135px}.pf-invite{padding:24px}.pf-home .pf-invite h2{font-size:1.6rem}.pf-maker h2{font-size:1.7rem}.album-header .album-masthead{gap:14px;padding:16px 0}.album-header .album-name{font-size:1.4rem}.album-header .album-actions a{font-size:.875rem;white-space:normal;min-height:48px;padding:9px 5px}}
 @media(prefers-reduced-motion:reduce){.pf-banner-image img{transition:none}.pf-banner>a:hover img{transform:none}}
 
@@ -31,7 +31,7 @@
 .pf-home .pf-banners{gap:18px}
 .pf-home .pf-banner{border:0;background:transparent}
 .pf-home .pf-banner>a{position:relative;overflow:hidden}
-.pf-home .pf-banner-image{height:auto;aspect-ratio:1.6}
+.pf-home .pf-banner-image{width:100%;height:auto;aspect-ratio:1.6}
 .pf-home .pf-banner-title{position:absolute;inset:auto 0 0;padding:42px 18px 16px;background:linear-gradient(transparent,rgba(0,0,0,.88));text-shadow:0 1px 3px #000}
 .pf-home .pf-banner-title>span{font-size:1.25rem;line-height:1.45;color:#fff}
 .pf-home .pf-more{margin:20px 0 0}
@@ -70,3 +70,9 @@
  .album-header.album-home .album-actions{flex-basis:100%}
  .album-promos-home{padding-top:12px;padding-bottom:12px}
 }
+
+/* Remove stacked legacy spacing around the homepage footer. */
+body:has(.pf-home) .pf-home{padding-bottom:16px}
+body:has(.pf-home)>footer{margin-top:0;padding-top:12px}
+body:has(.pf-home) .album-promos{padding-top:12px}
+body:has(.pf-home)>main{padding-bottom:0}
