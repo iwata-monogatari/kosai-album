@@ -14,6 +14,12 @@ export function photoFront({city, area, hero, all, items, image, library='/libra
   const covers = {"/features/kosai-station/": "washizu-2008", "/features/shinjohara/": "commons-17b58981e99b"};
   const byId = new Map(all.map(photo => [photo.id, photo]));
   items = items.map(item => ({...item, photo: byId.get(covers[item.path]) || item.photo}));
+  // Open with subjects distinct from the lead photograph, in both grid and list views.
+  const openingPaths = ['/features/hamanako-waterfront/', '/features/shirasuka/'];
+  items = [
+    ...openingPaths.flatMap(path => items.filter(item => item.path === path)),
+    ...items.filter(item => !openingPaths.includes(item.path)),
+  ];
   const collections = [...new Set(all.map(p => p.collection).filter(Boolean))];
   return `<div class="pf-home" data-photo-front="20261127" data-city="${e(city)}">
     <section class="pf-hero">
